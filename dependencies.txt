@@ -1,0 +1,9 @@
+dependencies:
+spring web  (wev) =>         Build web, including RESTful, applications using Spring MVC. Uses Apache Tomcat as the default embedded container.
+
+PostgreSQL Driver (sql) =>   A JDBC and R2DBC driver that allows Java programs to connect to a PostgreSQL database using standard, database independent Java code.
+
+Lombok Developer (tools) =>  Java annotation library which helps to reduce boilerplate code.
+
+Spring Data JPA SQL
+Persist data in SQL stores with Java Persistence API using Spring Data and Hibernate.
