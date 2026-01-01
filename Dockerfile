@@ -1,8 +1,13 @@
-FROM eclipse-temurin:24-jdk
+# -------- Build Stage --------
+FROM maven:3.9.9-eclipse-temurin-21 AS build
 WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-# Use the exact JAR name from your target folder
-COPY target/instagram-0.0.1-SNAPSHOT.jar app.jar
-
+# -------- Runtime Stage --------
+FROM eclipse-temurin:21-jdk
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]
