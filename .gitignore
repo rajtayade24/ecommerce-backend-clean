@@ -1,9 +1,7 @@
 application-prod.properties
-application.properties
+#application.properties
 application.yml
 .env
-SPRING_PROFILES_ACTIVE=prod.txt
-SPRING_PROFILES_ACTIVE=prod
 
 HELP.md
 target/
