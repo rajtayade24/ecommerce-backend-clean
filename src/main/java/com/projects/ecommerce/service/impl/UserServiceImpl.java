@@ -78,13 +78,18 @@ public class UserServiceImpl implements UserService {
         // Encrypt password
         user.setPassword(appConfig.passwordEncoder().encode(userDto.getPassword()));
 
-        user.setRoles(Set.of(RoleType.USER));
+        if (userDto.getRoles() != null && !userDto.getRoles().isEmpty()) {
+            user.setRoles(userDto.getRoles());
+        } else {
+            user.setRoles(Set.of(RoleType.USER)); // default role
+        }
 
         if (user.getAddresses() != null) {
             for (Address address : user.getAddresses()) {
                 address.setUser(user);
             }
         }
+
         System.out.println("incomming addresses" + userDto.getAddresses());
         List<Address> addresses = new ArrayList<>();
         for (AddressDto aDto : userDto.getAddresses()) {
