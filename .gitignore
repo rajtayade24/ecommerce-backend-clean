@@ -1,5 +1,5 @@
-application-prod.properties
-#application.properties
+#application-prod.properties
+application.properties
 application.yml
 .env
 

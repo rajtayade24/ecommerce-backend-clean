@@ -13,7 +13,8 @@ public class AddressDto {
     private Long id;
     private Long userId;
     private String name;
-    private String address;
+    private String line1;
+    private String line2;
 
     private String city;
     private String state;
@@ -23,6 +24,6 @@ public class AddressDto {
     private String phone;
     private String label; // home/work
 
-    private boolean primaryAddress;
+    private boolean primaryAddress = true;
 }
 

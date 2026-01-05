@@ -19,7 +19,10 @@ public class Address {
 
     private String name;
     @Column(length = 100)
-    private String address;
+
+    private String line1;
+    
+    private String line2;
 
     private String city;
     private String state;

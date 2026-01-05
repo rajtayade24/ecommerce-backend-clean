@@ -21,16 +21,16 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +39,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -53,9 +54,11 @@ public class UserServiceImpl implements UserService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final AddressRepository addressRepository;
+    private final HandlerExceptionResolver handlerExceptionResolver;
 
 
     @Override
+    @Transactional
     public UserDto createUser(UserDto userDto) {
         User user = userRepository.findByEmailOrMobile(userDto.getEmail(), userDto.getMobile())
                 .orElse(null);
@@ -64,29 +67,32 @@ public class UserServiceImpl implements UserService {
 
         user = modelMapper.map(userDto, User.class);
 
-        String identifier = userDto.getEmail();
-        if (identifier.contains("@")) {
-            user.setEmail(identifier);
-        } else {
-            user.setMobile(identifier);
-        }
+//        String identifier = userDto.getEmail();
+//        if (identifier.contains("@")) {
+//            user.setEmail(identifier);
+//        } else {
+//            user.setMobile(identifier);
+//        }
         user.setMobile(userDto.getMobile());
 
         // Encrypt password
         user.setPassword(appConfig.passwordEncoder().encode(userDto.getPassword()));
 
-        // MANUAL ADDRESS HANDLING
-        Address address = Address.builder()
-                .address(userDto.getAddress())
-                .city(userDto.getCity())
-                .state(userDto.getState())
-                .pincode(userDto.getPincode())
-                .primaryAddress(true)
-                .user(user)
-                .build();
-        user.getAddresses().add(address);
-
         user.setRoles(Set.of(RoleType.USER));
+
+        if (user.getAddresses() != null) {
+            for (Address address : user.getAddresses()) {
+                address.setUser(user);
+            }
+        }
+        System.out.println("incomming addresses" + userDto.getAddresses());
+        List<Address> addresses = new ArrayList<>();
+        for (AddressDto aDto : userDto.getAddresses()) {
+            Address addr = modelMapper.map(aDto, Address.class);
+            addr.setUser(user);
+            addresses.add(addr);
+        }
+        user.setAddresses(addresses);
 
         // TODO: Save the user in DB using service/repo
         userRepository.save(user);
@@ -100,41 +106,66 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
-    void addAdmin() {
-        UserDto user = new UserDto();
-        user.setId(1L);
-        user.setEmail("admin@gmail.com");
-        user.setPassword("admin123"); // In real apps, always hash passwords!
-        user.setName("John Doe");
-        user.setAddress("123, Main Street");
-        user.setCity("Mumbai");
-        user.setState("Maharashtra");
-        user.setPincode("400001");
-        user.setRoles(Set.of(RoleType.ADMIN));
-        user.setActive(true);
-    }
+//    void addAdmin() {
+//        UserDto user = new UserDto();
+//        user.setId(1L);
+//        user.setEmail("admin@gmail.com");
+//        user.setPassword("admin123"); // In real apps, always hash passwords!
+//        user.setName("John Doe");
+//        user.setAddress("123, Main Street");
+//        user.setCity("Mumbai");
+//        user.setState("Maharashtra");
+//        user.setPincode("400001");
+//        user.setRoles(Set.of(RoleType.ADMIN));
+//        user.setActive(true);
+//    }
 
     @Override
     public UserDto login(LoginRequest dto) {
+
+        User user = userRepository
+                .findByEmailOrMobile(dto.getIdentifier(), dto.getIdentifier())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with identifier: " + dto.getIdentifier()));
+
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(dto.getIdentifier(), dto.getPassword())
             );
 
-            User user = (User) authentication.getPrincipal();
-            UserDto userDto = modelMapper.map(user, UserDto.class);
+            // Step 3: Retrieve authenticated principal
+            User authenticatedUser = (User) authentication.getPrincipal();
 
-            String token = authUtil.generateToken(user);
+            UserDto userDto = modelMapper.map(authenticatedUser, UserDto.class);
+
+            String token = authUtil.generateToken(authenticatedUser);
             userDto.setToken(token);
 
             return userDto;
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
+        } catch (BadCredentialsException ex) {
+            // Specific exception for wrong password
+            throw new RuntimeException("Invalid credentials, please check your username and password", ex);
+        } catch (DisabledException ex) {
+            // User account is disabled
+            throw new RuntimeException("Account is disabled. Contact support.", ex);
+        } catch (LockedException ex) {
+            // User account is locked
+            throw new RuntimeException("Account is locked. Contact support.", ex);
+        } catch (AuthenticationException ex) {
+            // Any other authentication exceptions
+            throw new RuntimeException("Authentication failed", ex);
+        } catch (Exception ex) {
+            // Fallback for other unexpected errors
+            throw new RuntimeException("An unexpected error occurred during login", ex);
         }
     }
 
+    @Transactional(readOnly = true)
     public UserDto me(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
+        Long userId = ((User) authentication.getPrincipal()).getId();
+
+        User user = userRepository.findByIdWithAddresses(userId)
+                .orElseThrow();
+
         return modelMapper.map(user, UserDto.class);
     }
 

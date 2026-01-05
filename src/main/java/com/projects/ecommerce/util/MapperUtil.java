@@ -142,7 +142,8 @@ public class MapperUtil {
 
     public Address copyAddressFromDto(AddressDto dto) {
         return Address.builder()
-                .address(dto.getAddress())
+                .line1(dto.getLine1())
+                .line2(dto.getLine2())
                 .primaryAddress(dto.isPrimaryAddress())
                 .name(dto.getName())
                 .phone(dto.getPhone())
