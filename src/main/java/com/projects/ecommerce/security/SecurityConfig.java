@@ -29,6 +29,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.io.IOException;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -44,9 +45,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
+                // Disable CSRF for APIs
                 .csrf(csrf -> csrf.disable())
+
+                // Enable CORS with custom configuration
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+                // Stateless session (JWT)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // Authorization rules
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight
                                 .requestMatchers("/", "/auth/login", "/auth/signup").permitAll()
@@ -59,7 +67,10 @@ public class SecurityConfig {
 //
                                 .anyRequest().authenticated()
                 )
+                // Authentication provider
                 .authenticationProvider(authenticationProvider())
+
+                // JWT filter before username/password auth filter
                 .addFilterBefore(
                         jwtAuthFilter,
                         UsernamePasswordAuthenticationFilter.class
@@ -94,15 +105,19 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:5500"); // frontend
-        configuration.addAllowedOrigin("http://127.0.0.1:5500");
-//        configuration.addAllowedOrigin("*"); // optional for dev
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedHeader("*");
-        configuration.setAllowCredentials(true); // if sending cookies / auth headers
+
+        configuration.setAllowCredentials(true); // allow cookies / auth headers
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:5500",
+                "http://127.0.0.1:5500",
+                "https://ecommerce-frontend-110.onrender.com" // deployed frontend
+        ));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
+        
         return source;
     }
 
