@@ -24,7 +24,7 @@ public interface UserService {
 
      UserDto me(Authentication authentication);
 
-    String upload(MultipartFile file);
+//    String upload(MultipartFile file);
 
     void deleteFile(String filePath);
 

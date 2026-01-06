@@ -76,14 +76,15 @@ public class CartItemServiceImpl implements CartItemService {
         ProductVariant variant = vatiantRepository.findById(dto.getVariantId())
                 .orElseThrow(() -> new RuntimeException("Product variant not found"));
 
-        // Check existing item (by user + variant) OR (user + product if variant is null)
+        // Check existing item (by user + variant) OR (user + product if variant is
+        // null)
         Optional<CartItem> existingOpt = (variant != null)
                 ? cartItemRepository.findByUserAndVariant(user, variant)
                 : cartItemRepository.findByUserAndProduct(user, product);
 
         if (existingOpt.isPresent()) {
             CartItem existing = existingOpt.get();
-//            existing.setQuantity(existing.getQuantity() + dto.getQuantity());
+            // existing.setQuantity(existing.getQuantity() + dto.getQuantity());
             existing.setQuantity(dto.getQuantity());
             CartItem saved = cartItemRepository.save(existing);
             return mapper.mapCartItemToCartItemDto(saved);
@@ -128,21 +129,18 @@ public class CartItemServiceImpl implements CartItemService {
         return cartItemRepository.countByUser(user);
     }
 
-
     @Override
     public CartItemDto updateQuantity(Long id, Integer quantity) {
         CartItem cartItem = cartItemRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
-                        "Cart item not found"
-                ));
+                        "Cart item not found"));
 
         ProductVariant variant = cartItem.getVariant();
         if (variant.getStock() < quantity) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "Only " + variant.getStock() + " items left in stock"
-            );
+                    "Only " + variant.getStock() + " items left in stock");
         }
 
         cartItem.setQuantity(quantity);
@@ -152,12 +150,12 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    @Transactional  
+    @Transactional
     public Long clearCart() {
 
         User user = getLoggedInUser();
         long count = cartItemRepository.countByUser(user);
-        
+
         cartItemRepository.deleteByUser(user);
 
         return count; // number of deleted items
@@ -193,8 +191,12 @@ public class CartItemServiceImpl implements CartItemService {
                     .fromCurrentContextPath()
                     .build()
                     .toUriString();
-
-            String image = product.getImages().isEmpty() ? null : baseUrl + product.getImages().get(0);
+                    
+            String image = product.getImages() != null
+                    && !product.getImages().isEmpty()
+                    && !product.getImages().get(0).startsWith("http")
+                            ? product.getImages().get(0)
+                            : null;
 
             responses.add(OrderItemResponse.builder()
                     .productId(product.getId())
@@ -219,6 +221,4 @@ public class CartItemServiceImpl implements CartItemService {
                 .build();
     }
 
-  
 }
-

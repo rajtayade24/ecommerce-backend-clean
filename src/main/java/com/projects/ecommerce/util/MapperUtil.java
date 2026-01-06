@@ -62,10 +62,10 @@ public class MapperUtil {
         dto.setImages(
                 product.getImages()
                         .stream()
-                        .map(img ->
-                                baseUrl + img)
-                        .collect(Collectors.toList())
-        );
+                        .map(img -> (img != null && img.startsWith("http"))
+                                ? img
+                                : baseUrl + img)
+                        .collect(Collectors.toList()));
 
         // Variants
         if (product.getVariants() != null) {
@@ -115,8 +115,7 @@ public class MapperUtil {
             pDto.setImages(
                     product.getImages()
                             .stream()
-                            .map(img ->
-                                    baseUrl + img)
+                            .map(img -> img.startsWith("http") ? img : baseUrl + img)
                             .collect(Collectors.toList())
             );
             // map category ID
@@ -209,7 +208,8 @@ public class MapperUtil {
                 throw new IllegalArgumentException("quantity > 0 required");
 
             ProductVariant variant = productVatiantRepository.findById(i.getVariantId())
-                    .orElseThrow(() -> new RuntimeException("variant not found: " + i.getVariantId()));
+                    .orElseThrow(() -> new RuntimeException(
+                            "variant not found: " + i.getVariantId()));
 
             Product product = variant.getProduct();
             BigDecimal unitPrice = nvl(BigDecimal.valueOf(variant.getPrice()));
@@ -261,7 +261,8 @@ public class MapperUtil {
     }
 
     public OrderResponse mapOrderToResponse(Order order) {
-        if (order == null) return null;
+        if (order == null)
+            return null;
 
         return OrderResponse.builder()
                 .orderNumber(order.getOrderNumber())
@@ -278,8 +279,7 @@ public class MapperUtil {
                 .paymentMethod(
                         order.getPaymentMethod() != null
                                 ? order.getPaymentMethod().name()
-                                : null
-                )
+                                : null)
 
                 .stripeSessionId(order.getStripeSessionId())
                 .stripePaymentIntentId(order.getStripePaymentIntentId())
@@ -294,9 +294,9 @@ public class MapperUtil {
                 .build();
     }
 
-
     public List<OrderItemResponse> mapItems(List<OrderItem> items) {
-        if (items == null) return List.of();
+        if (items == null)
+            return List.of();
 
         return items.stream().map(this::mapOrderItemToResponse)
                 .collect(Collectors.toList());
@@ -312,7 +312,12 @@ public class MapperUtil {
                 .build()
                 .toUriString();
 
-        String image = product.getImages().isEmpty() ? null : baseUrl + product.getImages().get(0);
+        String image = null;
+
+        if (product.getImages() != null && !product.getImages().isEmpty()) {
+            String img = product.getImages().get(0);
+            image = img.startsWith("http") ? img : baseUrl + img;
+        }
 
         return OrderItemResponse.builder()
                 .productId(item.getProductId())
@@ -326,6 +331,5 @@ public class MapperUtil {
                 .image(image) // fill later if needed from product service
                 .build();
     }
-
 
 }

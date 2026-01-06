@@ -223,23 +223,23 @@ public class UserServiceImpl implements UserService {
         return ResponseEntity.ok(userDto);
     }
 
-    @Override
-    public String upload(MultipartFile file) {
-        try {
-            String uploadDir = "/uploads/images/";
-            File dir = new File(uploadDir);
-            if (!dir.exists()) dir.mkdirs();
-
-            String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-            Path path = Paths.get(uploadDir + filename);
-
-            Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-
-            return "/uploads/images/" + filename; // RETURN URL PATH
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to upload image", e);
-        }
-    }
+//    @Override
+//    public String upload(MultipartFile file) {
+//        try {
+//            String uploadDir = "/uploads/images/";
+//            File dir = new File(uploadDir);
+//            if (!dir.exists()) dir.mkdirs();
+//
+//            String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+//            Path path = Paths.get(uploadDir + filename);
+//
+//            Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+//
+//            return "/uploads/images/" + filename; // RETURN URL PATH
+//        } catch (IOException e) {
+//            throw new RuntimeException("Failed to upload image", e);
+//        }
+//    }
 
     @Override
     public void deleteFile(String filePath) {

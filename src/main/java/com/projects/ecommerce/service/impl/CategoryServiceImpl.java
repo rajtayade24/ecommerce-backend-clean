@@ -5,6 +5,7 @@ import com.projects.ecommerce.dto.request.RequestCategoryDto;
 import com.projects.ecommerce.entity.Category;
 import com.projects.ecommerce.repository.CategoryRepository;
 import com.projects.ecommerce.service.CategoryService;
+import com.projects.ecommerce.service.CloudinaryService;
 import com.projects.ecommerce.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final ModelMapper modelMapper;
     private final UserService service;
     private final HandlerExceptionResolver handlerExceptionResolver;
+    private final CloudinaryService cloudinaryService;
 
     @Override
     public CategoryDto create(RequestCategoryDto dto, MultipartFile image) {
@@ -35,7 +37,7 @@ public class CategoryServiceImpl implements CategoryService {
         try {
             // Handle image upload
             if (image != null && !image.isEmpty()) {
-                String imageUrl = service.upload(image);  // method below
+                String imageUrl = cloudinaryService.upload(image);  // method below
                 category.setImage(imageUrl);
             }
 
@@ -58,7 +60,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         if (image != null && !image.isEmpty()) {
             try {
-                String filename = service.upload(image);
+                String filename = cloudinaryService.upload(image);
                 existing.setImage(filename);
             } catch (Exception e) {
                 throw new RuntimeException("Image upload failed: " + e.getMessage(), e);

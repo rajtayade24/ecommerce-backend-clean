@@ -9,6 +9,7 @@ import com.projects.ecommerce.entity.Product;
 import com.projects.ecommerce.repository.CartItemRepository;
 import com.projects.ecommerce.repository.ProductRepository;
 import com.projects.ecommerce.service.CategoryService;
+import com.projects.ecommerce.service.CloudinaryService;
 import com.projects.ecommerce.service.ProductService;
 
 import com.projects.ecommerce.service.UserService;
@@ -40,6 +41,7 @@ public class ProductServiceImpl implements ProductService {
     private final CartItemRepository cartItemRepository;
     private final UserService service;
     private final MapperUtil mapper;
+    private final CloudinaryService cloudinaryService;
 
     @Override
     public ProductDto create(@Valid CreateProductDto dto, MultipartFile[] images) {
@@ -66,7 +68,7 @@ public class ProductServiceImpl implements ProductService {
             try {
                 List<String> urls = Arrays.stream(images)
                         .filter(img -> img != null && !img.isEmpty()) // avoid null/empty
-                        .map(service::upload)
+                        .map(cloudinaryService::upload)
                         .collect(Collectors.toList());
                 product.setImages(urls);
                 log.info("Uploaded URLs: {}", urls);
@@ -130,7 +132,7 @@ public class ProductServiceImpl implements ProductService {
             try {
                 List<String> urls = Arrays.stream(images)
                         .filter(img -> img != null && !img.isEmpty()) // avoid null/empty
-                        .map(service::upload)
+                        .map(cloudinaryService::upload)
                         .collect(Collectors.toList());
                 product.setImages(urls);
                 log.info("Uploaded URLs: {}", urls);

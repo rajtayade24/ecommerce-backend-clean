@@ -9,6 +9,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.nio.file.AccessDeniedException;
 
@@ -84,6 +85,12 @@ public class GlobalExceptionHandler {
         );
 
         return new ResponseEntity<>(apiError, apiError.getStatusCode());
+    }
+
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<String> handleMaxSize(MaxUploadSizeExceededException ex) {
+        return ResponseEntity.badRequest().body("File too large. Max allowed size is 10MB.");
     }
 
 }
