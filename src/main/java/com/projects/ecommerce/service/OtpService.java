@@ -106,16 +106,16 @@ public class OtpService {
                 + "This code will expire in " + (ttlSeconds / 60) + " minutes.\n\n"
                 + "If you didn’t request this, please ignore this email.\n\n"
                 + "— The Reeljolly Team";
-                
+
         try {
             if (channel == Channel.EMAIL) {
                 if (emailService == null)
                     throw new IllegalStateException("EmailService is not configured");
                 emailService.sendEmail(normalized, "Your Reeljolly Verification Code", body);
             } else {
-                if (smsService == null)
-                    throw new IllegalStateException("SmsService is not configured");
-                smsService.sendSms(normalized, body);
+                String smsBody = "Reeljolly OTP: " + otp +
+                        ". Valid for " + (ttlSeconds / 60) + " mins.";
+                smsService.sendSms(normalized, smsBody);
             }
         } catch (IllegalArgumentException iae) {
             // validation-related, bubble up as 400

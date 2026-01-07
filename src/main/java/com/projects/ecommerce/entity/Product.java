@@ -40,10 +40,12 @@ public class Product {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ElementCollection
-    @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
-    @Column(name = "url")
-    private List<String> images = new ArrayList<>();
+    @OneToMany(
+            mappedBy = "product",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<ProductImage> images = new ArrayList<>();
 
     //    Product -> variants -> ProductVariant -> product -> variants -> ProductVariant -> ...
 //            …which creates an infinite nesting (or very deep, >500) that Jackson cannot handle.

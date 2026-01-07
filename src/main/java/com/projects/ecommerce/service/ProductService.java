@@ -35,4 +35,6 @@ public interface ProductService {
     );
 
     Long countProducts();
+
+    void delete(Long id);
 }

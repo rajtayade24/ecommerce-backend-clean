@@ -17,6 +17,7 @@ import com.projects.ecommerce.security.AuthUtil;
 import com.projects.ecommerce.service.UserService;
 import com.projects.ecommerce.specification.UserSpecification;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,7 +42,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -56,23 +57,25 @@ public class UserServiceImpl implements UserService {
     private final AddressRepository addressRepository;
     private final HandlerExceptionResolver handlerExceptionResolver;
 
-
     @Override
     @Transactional
     public UserDto createUser(UserDto userDto) {
-        User user = userRepository.findByEmailOrMobile(userDto.getEmail(), userDto.getMobile())
+        User user = userRepository.findByMobile(userDto.getMobile())
                 .orElse(null);
+        log.info("Signup mobile: {}", userDto.getMobile());
+        System.out.println("user user user seur useruser suer ser" +user);
 
-        if (user != null) throw new IllegalArgumentException("user already found");
+        if (user != null)
+            throw new IllegalArgumentException("user already found");
 
         user = modelMapper.map(userDto, User.class);
 
-//        String identifier = userDto.getEmail();
-//        if (identifier.contains("@")) {
-//            user.setEmail(identifier);
-//        } else {
-//            user.setMobile(identifier);
-//        }
+        // String identifier = userDto.getEmail();
+        // if (identifier.contains("@")) {
+        // user.setEmail(identifier);
+        // } else {
+        // user.setMobile(identifier);
+        // }
         user.setMobile(userDto.getMobile());
 
         // Encrypt password
@@ -111,31 +114,31 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
-//    void addAdmin() {
-//        UserDto user = new UserDto();
-//        user.setId(1L);
-//        user.setEmail("admin@gmail.com");
-//        user.setPassword("admin123"); // In real apps, always hash passwords!
-//        user.setName("John Doe");
-//        user.setAddress("123, Main Street");
-//        user.setCity("Mumbai");
-//        user.setState("Maharashtra");
-//        user.setPincode("400001");
-//        user.setRoles(Set.of(RoleType.ADMIN));
-//        user.setActive(true);
-//    }
+    // void addAdmin() {
+    // UserDto user = new UserDto();
+    // user.setId(1L);
+    // user.setEmail("admin@gmail.com");
+    // user.setPassword("admin123"); // In real apps, always hash passwords!
+    // user.setName("John Doe");
+    // user.setAddress("123, Main Street");
+    // user.setCity("Mumbai");
+    // user.setState("Maharashtra");
+    // user.setPincode("400001");
+    // user.setRoles(Set.of(RoleType.ADMIN));
+    // user.setActive(true);
+    // }
 
     @Override
     public UserDto login(LoginRequest dto) {
 
         User user = userRepository
                 .findByEmailOrMobile(dto.getIdentifier(), dto.getIdentifier())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with identifier: " + dto.getIdentifier()));
+                .orElseThrow(
+                        () -> new UsernameNotFoundException("User not found with identifier: " + dto.getIdentifier()));
 
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(dto.getIdentifier(), dto.getPassword())
-            );
+                    new UsernamePasswordAuthenticationToken(dto.getIdentifier(), dto.getPassword()));
 
             // Step 3: Retrieve authenticated principal
             User authenticatedUser = (User) authentication.getPrincipal();
@@ -184,7 +187,6 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(saved, AddressDto.class);
     }
 
-
     @Transactional
     public ResponseEntity<UserDto> handleOAuth2LoginRequest(OAuth2User oAuth2User, String registrationId) {
         // fetch providerType and providerId
@@ -213,7 +215,8 @@ public class UserServiceImpl implements UserService {
                 userRepository.save(user);
             }
         } else {
-            throw new BadCredentialsException("This email is already registered with provider " + emailUser.getProviderType());
+            throw new BadCredentialsException(
+                    "This email is already registered with provider " + emailUser.getProviderType());
         }
 
         UserDto userDto = modelMapper.map(user, UserDto.class);
@@ -223,23 +226,24 @@ public class UserServiceImpl implements UserService {
         return ResponseEntity.ok(userDto);
     }
 
-//    @Override
-//    public String upload(MultipartFile file) {
-//        try {
-//            String uploadDir = "/uploads/images/";
-//            File dir = new File(uploadDir);
-//            if (!dir.exists()) dir.mkdirs();
-//
-//            String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-//            Path path = Paths.get(uploadDir + filename);
-//
-//            Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-//
-//            return "/uploads/images/" + filename; // RETURN URL PATH
-//        } catch (IOException e) {
-//            throw new RuntimeException("Failed to upload image", e);
-//        }
-//    }
+    // @Override
+    // public String upload(MultipartFile file) {
+    // try {
+    // String uploadDir = "/uploads/images/";
+    // File dir = new File(uploadDir);
+    // if (!dir.exists()) dir.mkdirs();
+    //
+    // String filename = System.currentTimeMillis() + "_" +
+    // file.getOriginalFilename();
+    // Path path = Paths.get(uploadDir + filename);
+    //
+    // Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+    //
+    // return "/uploads/images/" + filename; // RETURN URL PATH
+    // } catch (IOException e) {
+    // throw new RuntimeException("Failed to upload image", e);
+    // }
+    // }
 
     @Override
     public void deleteFile(String filePath) {
@@ -297,8 +301,7 @@ public class UserServiceImpl implements UserService {
         try {
             Page<User> usersPage = userRepository.findAll(
                     UserSpecification.combine(search, active),
-                    pageable
-            );
+                    pageable);
             return usersPage.map(user -> modelMapper.map(user, UserDto.class));
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
@@ -322,13 +325,11 @@ public class UserServiceImpl implements UserService {
                 && user.getRoles().contains(RoleType.ADMIN);
 
         if (isAdmin && !active) {
-            long activeAdminCount =
-                    userRepository.countByRolesContainingAndActive(RoleType.ADMIN, true);
+            long activeAdminCount = userRepository.countByRolesContainingAndActive(RoleType.ADMIN, true);
 
             if (activeAdminCount <= 1) {
                 throw new IllegalStateException(
-                        "System must contain at least one active ADMIN"
-                );
+                        "System must contain at least one active ADMIN");
             }
         }
 
@@ -337,7 +338,6 @@ public class UserServiceImpl implements UserService {
         User saved = userRepository.save(user);
         return modelMapper.map(saved, UserDto.class);
     }
-
 
     public List<String> suggestKeywords(String q, int limit) {
         if (q == null || q.isBlank() || limit <= 0) {
@@ -356,15 +356,17 @@ public class UserServiceImpl implements UserService {
         return new ArrayList<>(result);
     }
 
-
     private void add(Set<String> target, List<String> source, int limit) {
-        if (source == null) return;
+        if (source == null)
+            return;
 
         for (String s : source) {
-            if (s == null || s.isBlank()) continue;
+            if (s == null || s.isBlank())
+                continue;
 
             target.add(s.trim());
-            if (target.size() >= limit) break;
+            if (target.size() >= limit)
+                break;
         }
     }
 }

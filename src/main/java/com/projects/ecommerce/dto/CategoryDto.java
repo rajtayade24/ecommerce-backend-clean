@@ -20,6 +20,7 @@ public class CategoryDto {
     private String description;
     private String image; // stored filename or URL
     private int count;
+
     private OffsetDateTime createdAt;
 
 }

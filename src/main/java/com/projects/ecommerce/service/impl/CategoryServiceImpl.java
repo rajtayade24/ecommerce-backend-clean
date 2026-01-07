@@ -2,6 +2,7 @@ package com.projects.ecommerce.service.impl;
 
 import com.projects.ecommerce.dto.CategoryDto;
 import com.projects.ecommerce.dto.request.RequestCategoryDto;
+import com.projects.ecommerce.dto.response.CloudinaryUploadResult;
 import com.projects.ecommerce.entity.Category;
 import com.projects.ecommerce.repository.CategoryRepository;
 import com.projects.ecommerce.service.CategoryService;
@@ -37,8 +38,9 @@ public class CategoryServiceImpl implements CategoryService {
         try {
             // Handle image upload
             if (image != null && !image.isEmpty()) {
-                String imageUrl = cloudinaryService.upload(image);  // method below
-                category.setImage(imageUrl);
+                CloudinaryUploadResult uploaded = cloudinaryService.upload(image); // method below
+                category.setImage(uploaded.getImage());
+                category.setPublicId(uploaded.getPublicId());
             }
 
             Category savedCategory = categoryRepository.save(category);
@@ -60,8 +62,10 @@ public class CategoryServiceImpl implements CategoryService {
 
         if (image != null && !image.isEmpty()) {
             try {
-                String filename = cloudinaryService.upload(image);
-                existing.setImage(filename);
+                CloudinaryUploadResult uploaded = cloudinaryService.upload(image); // method below
+                existing.setImage(uploaded.getImage());
+                existing.setPublicId(uploaded.getPublicId());
+                
             } catch (Exception e) {
                 throw new RuntimeException("Image upload failed: " + e.getMessage(), e);
             }
@@ -163,24 +167,22 @@ public class CategoryServiceImpl implements CategoryService {
         log.info("Category found: {} (image={})", category.getName(), category.getImage());
 
         // Delete stored image if exists
-        if (category.getImage() != null) {
-            log.info("Attempting to delete image: {}", category.getImage());
+        if (category.getImage() != null && category.getPublicId() != null) {
+            log.info("Attempting to delete image with publicId: {}", category.getPublicId());
             try {
-                service.deleteFile(category.getImage());
+                service.deleteFile(category.getPublicId());
                 log.info("Image deleted successfully: {}", category.getImage());
             } catch (Exception e) {
                 log.error("Failed to delete image '{}' for category id {}. Error: {}",
                         category.getImage(), id, e.getMessage(), e);
                 throw new RuntimeException(
-                        "Category deleted, but failed to delete image: " + e.getMessage(), e
-                );
+                        "Failed to delete image: " + e.getMessage(), e);
             }
         }
 
         categoryRepository.delete(category);
         log.info("Category deleted successfully with id: {}", id);
     }
-
 
     @Override
     public Long countCategories() {

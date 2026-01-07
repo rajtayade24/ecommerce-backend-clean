@@ -27,5 +27,7 @@ public class Category {
 
     private String image;
 
+    private String publicId;
+
     private OffsetDateTime createdAt = OffsetDateTime.now();
 }

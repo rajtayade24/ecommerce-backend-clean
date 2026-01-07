@@ -7,10 +7,7 @@ import com.projects.ecommerce.dto.request.CheckoutPreviewRequest;
 import com.projects.ecommerce.dto.response.CheckoutPreviewResponse;
 import com.projects.ecommerce.dto.response.OrderItemResponse;
 import com.projects.ecommerce.dto.response.OrderResponse;
-import com.projects.ecommerce.entity.CartItem;
-import com.projects.ecommerce.entity.Product;
-import com.projects.ecommerce.entity.ProductVariant;
-import com.projects.ecommerce.entity.User;
+import com.projects.ecommerce.entity.*;
 import com.projects.ecommerce.repository.CartItemRepository;
 import com.projects.ecommerce.repository.ProductRepository;
 import com.projects.ecommerce.repository.ProductVatiantRepository;
@@ -35,6 +32,7 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -191,12 +189,18 @@ public class CartItemServiceImpl implements CartItemService {
                     .fromCurrentContextPath()
                     .build()
                     .toUriString();
-                    
-            String image = product.getImages() != null
-                    && !product.getImages().isEmpty()
-                    && !product.getImages().get(0).startsWith("http")
-                            ? product.getImages().get(0)
-                            : null;
+
+
+            String image = product.getImages()
+                    .stream()
+                    .findFirst()
+                    .map(img -> {
+                        String imagePath = img.getImage(); // ✅ STRING
+                        return imagePath.startsWith("http")
+                                ? imagePath
+                                : baseUrl + "/" + imagePath;
+                    })
+                    .orElse(null);
 
             responses.add(OrderItemResponse.builder()
                     .productId(product.getId())

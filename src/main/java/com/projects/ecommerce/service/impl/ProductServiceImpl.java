@@ -3,9 +3,11 @@ package com.projects.ecommerce.service.impl;
 import com.projects.ecommerce.dto.CartItemDto;
 import com.projects.ecommerce.dto.ProductDto;
 import com.projects.ecommerce.dto.request.CreateProductDto;
+import com.projects.ecommerce.dto.response.CloudinaryUploadResult;
 import com.projects.ecommerce.entity.CartItem;
 import com.projects.ecommerce.entity.Category;
 import com.projects.ecommerce.entity.Product;
+import com.projects.ecommerce.entity.ProductImage;
 import com.projects.ecommerce.repository.CartItemRepository;
 import com.projects.ecommerce.repository.ProductRepository;
 import com.projects.ecommerce.service.CategoryService;
@@ -17,6 +19,7 @@ import com.projects.ecommerce.specification.ProductSpecifications;
 import com.projects.ecommerce.util.MapperUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.*;
@@ -63,18 +66,50 @@ public class ProductServiceImpl implements ProductService {
                 .replaceAll("[^a-z0-9\\-]", "");
         product.setSlug(slug);
 
+//        // 2. Handle image uploads
+//        if (images != null && images.length > 0) {
+//            try {
+//                List<String> urls = Arrays.stream(images)
+//                        .filter(img -> img != null && !img.isEmpty()) // avoid null/empty
+//                        .map(cloudinaryService::upload)
+//                        .collect(Collectors.toList());
+//                product.setImages(urls);
+//                log.info("Uploaded URLs: {}", urls);
+//
+//            } catch (Exception e) {
+//                throw new RuntimeException("Failed to upload product images: " + e.getMessage(), e);
+//            }
+//        } else {
+//            log.info("No images provided for product");
+//        }
+
         // 2. Handle image uploads
         if (images != null && images.length > 0) {
             try {
-                List<String> urls = Arrays.stream(images)
-                        .filter(img -> img != null && !img.isEmpty()) // avoid null/empty
-                        .map(cloudinaryService::upload)
-                        .collect(Collectors.toList());
-                product.setImages(urls);
-                log.info("Uploaded URLs: {}", urls);
+                List<ProductImage> productImages = Arrays.stream(images)
+                        .filter(img -> img != null && !img.isEmpty())
+                        .map(file -> {
+                            CloudinaryUploadResult result = cloudinaryService.upload(file);
+
+                            ProductImage image = new ProductImage();
+                            image.setImage(result.getImage());
+                            image.setPublicId(result.getPublicId());
+                            image.setProduct(product); // IMPORTANT (bidirectional)
+
+                            return image;
+                        })
+                        .toList();
+
+                product.setImages(productImages);
+
+                log.info(
+                        "Uploaded {} images for product {}",
+                        productImages.size(),
+                        product.getName()
+                );
 
             } catch (Exception e) {
-                throw new RuntimeException("Failed to upload product images: " + e.getMessage(), e);
+                throw new RuntimeException("Failed to upload product images", e);
             }
         } else {
             log.info("No images provided for product");
@@ -130,15 +165,30 @@ public class ProductServiceImpl implements ProductService {
         // 2. Handle image uploads
         if (images != null && images.length > 0) {
             try {
-                List<String> urls = Arrays.stream(images)
-                        .filter(img -> img != null && !img.isEmpty()) // avoid null/empty
-                        .map(cloudinaryService::upload)
-                        .collect(Collectors.toList());
-                product.setImages(urls);
-                log.info("Uploaded URLs: {}", urls);
+                List<ProductImage> productImages = Arrays.stream(images)
+                        .filter(img -> img != null && !img.isEmpty())
+                        .map(file -> {
+                            CloudinaryUploadResult result = cloudinaryService.upload(file);
+
+                            ProductImage image = new ProductImage();
+                            image.setImage(result.getImage());
+                            image.setPublicId(result.getPublicId());
+                            image.setProduct(product); // IMPORTANT (bidirectional)
+
+                            return image;
+                        })
+                        .toList();
+
+                product.setImages(productImages);
+
+                log.info(
+                        "Uploaded {} images for product {}",
+                        productImages.size(),
+                        product.getName()
+                );
 
             } catch (Exception e) {
-                throw new RuntimeException("Failed to upload product images: " + e.getMessage(), e);
+                throw new RuntimeException("Failed to upload product images", e);
             }
         } else {
             log.info("No images provided for product");
@@ -238,5 +288,29 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Long countProducts() {
         return productRepository.count();
+    }
+
+    @Override
+    public void delete(Long id) {
+
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + id));
+
+        // Delete stored image first
+        if (product.getImages() != null) {
+            try {
+                product.getImages().stream()
+                        .filter(img -> img.getPublicId() != null && !img.getPublicId().isEmpty())
+                        .forEach(img -> service.deleteFile(img.getPublicId()));
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to delete image: " + e.getMessage(), e);
+            }
+        }
+
+
+        // Delete category from DB
+        productRepository.delete(product);
+        log.info("Category deleted successfully with id: {}", id);
+
     }
 }

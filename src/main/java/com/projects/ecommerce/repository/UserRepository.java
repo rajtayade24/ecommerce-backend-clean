@@ -19,11 +19,12 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
 
     Optional<User> findByProviderIdAndProviderType(String providerId, AuthProviderType providerType);
 
-
     @Query("""
               SELECT u FROM User u
               LEFT JOIN FETCH u.addresses
               WHERE u.id = :id
             """)
     Optional<User> findByIdWithAddresses(Long id);
+
+    Optional<User> findByMobile(String mobile);
 }

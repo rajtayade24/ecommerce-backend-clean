@@ -25,6 +25,7 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -59,13 +60,26 @@ public class MapperUtil {
                 .build()
                 .toUriString();
 
+//        dto.setImages(
+//                product.getImages()
+//                        .stream()
+//                        .map(img -> (img != null && img.startsWith("http"))
+//                                ? img
+//                                : baseUrl + img)
+//                        .collect(Collectors.toList()));
+
         dto.setImages(
                 product.getImages()
                         .stream()
-                        .map(img -> (img != null && img.startsWith("http"))
-                                ? img
-                                : baseUrl + img)
-                        .collect(Collectors.toList()));
+                        .map(img -> {
+                            String image = img.getImage();
+                            return image.startsWith("http")
+                                    ? image
+                                    : baseUrl + (image.startsWith("/") ? "" : "/") + image;
+                        })
+                        .toList()
+        );
+
 
         // Variants
         if (product.getVariants() != null) {
@@ -79,7 +93,7 @@ public class MapperUtil {
 
         long totalStock = product.getVariants()
                 .stream()
-                .mapToLong(variant -> variant.getStock())
+                .mapToLong(ProductVariant::getStock)
                 .sum();
         dto.setInStock(totalStock);
 
@@ -112,12 +126,25 @@ public class MapperUtil {
                     .build()
                     .toUriString();
 
+//            pDto.setImages(
+//                    product.getImages()
+//                            .stream()
+//                            .map(img -> img.startsWith("http") ? img : baseUrl + img)
+//                            .collect(Collectors.toList())
+//            );
+
             pDto.setImages(
                     product.getImages()
                             .stream()
-                            .map(img -> img.startsWith("http") ? img : baseUrl + img)
-                            .collect(Collectors.toList())
+                            .map(img -> {
+                                String image = img.getImage();
+                                return image.startsWith("http")
+                                        ? image
+                                        : baseUrl + (image.startsWith("/") ? "" : "/") + image;
+                            })
+                            .toList()
             );
+
             // map category ID
             pDto.setCategory(product.getCategory() != null ? product.getCategory().getId() : null);
 
@@ -312,12 +339,17 @@ public class MapperUtil {
                 .build()
                 .toUriString();
 
-        String image = null;
+//        if (product.getImages() != null && !product.getImages().isEmpty()) {
+//            String img = product.getImages().get(0);
+//            image = img.startsWith("http") ? img : baseUrl + img;
+//        }
+        String image = Objects.requireNonNull(product.getImages()
+                .stream()
+                .findFirst()
+                .map(img -> img.getImage().startsWith("http") ? img : baseUrl + img)
+                .orElse(null)).toString();
 
-        if (product.getImages() != null && !product.getImages().isEmpty()) {
-            String img = product.getImages().get(0);
-            image = img.startsWith("http") ? img : baseUrl + img;
-        }
+
 
         return OrderItemResponse.builder()
                 .productId(item.getProductId())
