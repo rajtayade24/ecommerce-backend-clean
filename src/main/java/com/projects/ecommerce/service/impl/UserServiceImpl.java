@@ -65,8 +65,8 @@ public class UserServiceImpl implements UserService {
         log.info("Signup mobile: {}", userDto.getMobile());
         System.out.println("user user user seur useruser suer ser" +user);
 
-        if (user != null)
-            throw new IllegalArgumentException("user already found");
+//        if (user != null)
+//            throw new IllegalArgumentException("user already found");
 
         user = modelMapper.map(userDto, User.class);
 
