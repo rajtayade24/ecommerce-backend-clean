@@ -17,6 +17,7 @@ public class CategoryDto {
     private Long id;
     private String name;
     private String slug;
+    private String publicId;
     private String description;
     private String image; // stored filename or URL
     private int count;

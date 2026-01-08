@@ -24,6 +24,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
@@ -62,23 +63,6 @@ public class ProductServiceImpl implements ProductService {
                 .replaceAll("\\s+", "-")
                 .replaceAll("[^a-z0-9\\-]", "");
         product.setSlug(slug);
-
-//        // 2. Handle image uploads
-//        if (images != null && images.length > 0) {
-//            try {
-//                List<String> urls = Arrays.stream(images)
-//                        .filter(img -> img != null && !img.isEmpty()) // avoid null/empty
-//                        .map(cloudinaryService::upload)
-//                        .collect(Collectors.toList());
-//                product.setImages(urls);
-//                log.info("Uploaded URLs: {}", urls);
-//
-//            } catch (Exception e) {
-//                throw new RuntimeException("Failed to upload product images: " + e.getMessage(), e);
-//            }
-//        } else {
-//            log.info("No images provided for product");
-//        }
 
         // 2. Handle image uploads
         if (images != null && images.length > 0) {
@@ -136,6 +120,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public ProductDto update(Long id, @Valid CreateProductDto dto, MultipartFile[] images) {
         log.info("updating product: {}", dto.getName());
 
@@ -298,7 +283,7 @@ public class ProductServiceImpl implements ProductService {
             try {
                 product.getImages().stream()
                         .filter(img -> img.getPublicId() != null && !img.getPublicId().isEmpty())
-                        .forEach(img -> service.deleteFile(img.getPublicId()));
+                        .forEach(img -> cloudinaryService.deleteFile(img.getPublicId()));
             } catch (Exception e) {
                 throw new RuntimeException("Failed to delete image: " + e.getMessage(), e);
             }

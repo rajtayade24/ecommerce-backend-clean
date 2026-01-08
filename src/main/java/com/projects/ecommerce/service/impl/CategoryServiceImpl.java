@@ -14,6 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -155,6 +156,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
         log.info("Request received to delete category with id: {}", id);
 
@@ -170,7 +172,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (category.getImage() != null && category.getPublicId() != null) {
             log.info("Attempting to delete image with publicId: {}", category.getPublicId());
             try {
-                service.deleteFile(category.getPublicId());
+                cloudinaryService.deleteFile(category.getPublicId());
                 log.info("Image deleted successfully: {}", category.getImage());
             } catch (Exception e) {
                 log.error("Failed to delete image '{}' for category id {}. Error: {}",

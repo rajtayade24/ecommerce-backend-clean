@@ -9,6 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @Service
@@ -37,7 +39,7 @@ public class SupabaseServiceImpl implements CloudService {
         if (idx >= 0) ext = originalFileName.substring(idx); // include dot
         String uuid = UUID.randomUUID().toString();
         // store under folder "products" root (or change as needed)
-        String path = "products/" + uuid + ext; // this is the "publicId" equivalent
+        String path = uuid + ext; 
 
         String endpoint = String.format("%s/storage/v1/object/%s/%s", supabaseUrl, bucket, path);
 
@@ -63,8 +65,11 @@ public class SupabaseServiceImpl implements CloudService {
                     throw new RuntimeException("Supabase upload failed: " + response.code() + " - " + respBody);
                 }
 
-                // build public URL (works for public buckets)
-                String publicUrl = String.format("%s/storage/v1/object/public/%s/%s", supabaseUrl, bucket, path);
+                String publicUrl = String.format("%s/storage/v1/object/public/%s/%s",
+                        supabaseUrl,
+                        bucket,
+                        URLEncoder.encode(path, StandardCharsets.UTF_8)
+                );
 
                 // return path as publicId so you can delete later using the same path
                 return new CloudinaryUploadResult(publicUrl, path);
