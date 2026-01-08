@@ -1,6 +1,8 @@
 package com.projects.ecommerce.service;
 
 import com.projects.ecommerce.entity.OtpData;
+import com.projects.ecommerce.entity.User;
+import com.projects.ecommerce.repository.UserRepository;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -27,14 +29,16 @@ import java.util.regex.Pattern;
 public class OtpService {
     private final EmailService emailService;
     private final SmsService smsService;
+    private final UserRepository userRepository;
 
     private final Map<String, OtpData> otpStore = new ConcurrentHashMap<>();
     private final Map<String, Instant> verifiedStore = new ConcurrentHashMap<>(); // identifier -> expiry
     private final SecureRandom secureRandom = new SecureRandom();
 
-    public OtpService(EmailService emailService, SmsService smsService) {
+    public OtpService(EmailService emailService, SmsService smsService, UserRepository userRepository) {
         this.emailService = emailService;
         this.smsService = smsService;
+        this.userRepository = userRepository;
     }
 
     @Value("${otp.ttl.seconds:300}")
@@ -93,6 +97,14 @@ public class OtpService {
     public void sendOtp(String identifier) {
         Channel channel = detectChannel(identifier);
         String normalized = normalize(identifier);
+
+        User user = userRepository.findByMobile(normalized)
+                .orElse(null);
+        log.info("Signup mobile: {}", normalized);
+        System.out.println("user user user seur useruser suer ser" + user);
+
+        if (user != null)
+            throw new IllegalArgumentException("user already found");
 
         String otp = generateOtp();
         Instant expiresAt = Instant.now().plusSeconds(ttlSeconds);

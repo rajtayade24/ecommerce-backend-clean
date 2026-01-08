@@ -6,7 +6,7 @@ import com.projects.ecommerce.dto.response.CloudinaryUploadResult;
 import com.projects.ecommerce.entity.Category;
 import com.projects.ecommerce.repository.CategoryRepository;
 import com.projects.ecommerce.service.CategoryService;
-import com.projects.ecommerce.service.CloudinaryService;
+import com.projects.ecommerce.service.CloudService;
 import com.projects.ecommerce.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final ModelMapper modelMapper;
     private final UserService service;
     private final HandlerExceptionResolver handlerExceptionResolver;
-    private final CloudinaryService cloudinaryService;
+    private final CloudService cloudinaryService;
 
     @Override
     public CategoryDto create(RequestCategoryDto dto, MultipartFile image) {

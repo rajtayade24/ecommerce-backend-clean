@@ -62,8 +62,6 @@ public class UserServiceImpl implements UserService {
     public UserDto createUser(UserDto userDto) {
         User user = userRepository.findByMobile(userDto.getMobile())
                 .orElse(null);
-        log.info("Signup mobile: {}", userDto.getMobile());
-        System.out.println("user user user seur useruser suer ser" +user);
 
 //        if (user != null)
 //            throw new IllegalArgumentException("user already found");
@@ -76,7 +74,11 @@ public class UserServiceImpl implements UserService {
         // } else {
         // user.setMobile(identifier);
         // }
-        user.setMobile(userDto.getMobile());
+        if (userDto.getMobile().startsWith("+91")) {
+            user.setMobile(userDto.getMobile());
+        } else {
+            user.setMobile("+91"+userDto.getMobile());
+        }
 
         // Encrypt password
         user.setPassword(appConfig.passwordEncoder().encode(userDto.getPassword()));

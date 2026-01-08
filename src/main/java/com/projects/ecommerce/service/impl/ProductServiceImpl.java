@@ -11,7 +11,7 @@ import com.projects.ecommerce.entity.ProductImage;
 import com.projects.ecommerce.repository.CartItemRepository;
 import com.projects.ecommerce.repository.ProductRepository;
 import com.projects.ecommerce.service.CategoryService;
-import com.projects.ecommerce.service.CloudinaryService;
+import com.projects.ecommerce.service.CloudService;
 import com.projects.ecommerce.service.ProductService;
 
 import com.projects.ecommerce.service.UserService;
@@ -19,16 +19,13 @@ import com.projects.ecommerce.specification.ProductSpecifications;
 import com.projects.ecommerce.util.MapperUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,7 +41,7 @@ public class ProductServiceImpl implements ProductService {
     private final CartItemRepository cartItemRepository;
     private final UserService service;
     private final MapperUtil mapper;
-    private final CloudinaryService cloudinaryService;
+    private final CloudService cloudinaryService;
 
     @Override
     public ProductDto create(@Valid CreateProductDto dto, MultipartFile[] images) {

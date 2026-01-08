@@ -15,7 +15,7 @@ public class ProductImage {
     private Long id;
 
     @Column(nullable = false)
-    private String image;   // Cloudinary secure_url
+    private String image;   //
 
     @Column(nullable = false)
     private String publicId;   // Cloudinary public_id
