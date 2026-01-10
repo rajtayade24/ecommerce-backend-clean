@@ -27,4 +27,6 @@ public interface CategoryService {
     void delete(Long id);
 
     Long countCategories();
+
+    CategoryDto getCategoryDtoById(Long id);
 }

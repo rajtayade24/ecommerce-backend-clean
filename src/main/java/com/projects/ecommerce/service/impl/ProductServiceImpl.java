@@ -279,15 +279,15 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + id));
 
         // Delete stored image first
-        if (product.getImages() != null) {
-            try {
-                product.getImages().stream()
-                        .filter(img -> img.getPublicId() != null && !img.getPublicId().isEmpty())
-                        .forEach(img -> cloudinaryService.deleteFile(img.getPublicId()));
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to delete image: " + e.getMessage(), e);
-            }
-        }
+//        if (product.getImages() != null) {
+//            try {
+//                product.getImages().stream()
+//                        .filter(img -> img.getPublicId() != null && !img.getPublicId().isEmpty())
+//                        .forEach(img -> cloudinaryService.deleteFile(img.getPublicId()));
+//            } catch (Exception e) {
+//                throw new RuntimeException("Failed to delete image: " + e.getMessage(), e);
+//            }
+//        }
 
 
         // Delete category from DB

@@ -24,7 +24,7 @@ import java.util.List;
         "*"
 })
 @Slf4j
-@RestController                                 
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/categories")
 public class CategoryController {
@@ -52,5 +52,12 @@ public class CategoryController {
         List<CategoryDto> categories = categoryService.getAllCategories();
         return ResponseEntity.ok(categories);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CategoryDto> getCategory(@PathVariable("id") Long id) {
+        CategoryDto dto = categoryService.getCategoryDtoById(id); // call your service
+        return ResponseEntity.ok(dto);
+    }
+
 
 }

@@ -82,10 +82,8 @@ public class Order {
     @JoinColumn(name = "shipping_address_id", nullable = false)
     private Address shippingAddress; // embeddable (queryable): ✔ Must be frozen at purchase time, ✔ Prevents issues
                                      // if user edits address later
-
     private OffsetDateTime paidAt; // payment was confirmed: ✔ SLA tracking, ✔ Financial reporting, ✔ Fraud
                                    // detection
-
     @CreationTimestamp
     private OffsetDateTime createdAt; // Order creation time: ✔ Sorting, ✔ Analytics, ✔ Auditing
 

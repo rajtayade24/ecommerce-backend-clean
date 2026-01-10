@@ -60,13 +60,13 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto createUser(UserDto userDto) {
-        User user = userRepository.findByMobile(userDto.getMobile())
-                .orElse(null);
+//        User user = userRepository.findByMobile(userDto.getMobile())
+//                .orElse(null);
 
 //        if (user != null)
 //            throw new IllegalArgumentException("user already found");
 
-        user = modelMapper.map(userDto, User.class);
+       User user = modelMapper.map(userDto, User.class);
 
         // String identifier = userDto.getEmail();
         // if (identifier.contains("@")) {

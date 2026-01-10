@@ -2,12 +2,18 @@
 application.properties
 application.yml
 .env
+.env.txt
+.env.local
+.env.development.local
+.env.production.local
 
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+
+src/main/resources/firebase/
 
 ### STS ###
 .apt_generated

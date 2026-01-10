@@ -2,14 +2,12 @@ package com.projects.ecommerce.security;
 
 import com.projects.ecommerce.entity.User;
 import com.projects.ecommerce.enums.AuthProviderType;
-import com.stripe.net.OAuth;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 

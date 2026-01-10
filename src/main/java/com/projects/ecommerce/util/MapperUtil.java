@@ -183,6 +183,9 @@ public class MapperUtil {
     public AddressDto copyAddressFromEntity(Address src) {
         return AddressDto.builder()
                 .name(src.getName())
+                .line1(src.getLine1())
+                .line2(src.getLine2())
+                .primaryAddress(src.isPrimaryAddress())
                 .phone(src.getPhone())
                 .city(src.getCity())
                 .state(src.getState())
@@ -339,16 +342,18 @@ public class MapperUtil {
                 .build()
                 .toUriString();
 
-//        if (product.getImages() != null && !product.getImages().isEmpty()) {
-//            String img = product.getImages().get(0);
-//            image = img.startsWith("http") ? img : baseUrl + img;
-//        }
-        String image = Objects.requireNonNull(product.getImages()
+        String image = product.getImages()
                 .stream()
                 .findFirst()
-                .map(img -> img.getImage().startsWith("http") ? img : baseUrl + img)
-                .orElse(null)).toString();
+                .map(img -> {
+                    String imgPath = img.getImage();
 
+                    System.out.println("imageimageimagepath: " + imgPath);
+                    return imgPath.startsWith("http") ? imgPath : baseUrl + imgPath;
+                })
+                .orElse(null);
+
+        System.out.println("imageimageimage: " + image);
 
 
         return OrderItemResponse.builder()

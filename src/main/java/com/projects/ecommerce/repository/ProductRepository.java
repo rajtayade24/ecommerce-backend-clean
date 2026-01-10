@@ -12,4 +12,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product>, ProductRepositoryCustom {
     // JpaSpecificationExecutor gives us findAll(Specification, Pageable)
     Page<Product> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String search, String search1, Pageable pageable);
+
+    long countByCategoryId(Long id);
 }

@@ -5,9 +5,9 @@ import com.projects.ecommerce.dto.request.RequestCategoryDto;
 import com.projects.ecommerce.dto.response.CloudinaryUploadResult;
 import com.projects.ecommerce.entity.Category;
 import com.projects.ecommerce.repository.CategoryRepository;
+import com.projects.ecommerce.repository.ProductRepository;
 import com.projects.ecommerce.service.CategoryService;
 import com.projects.ecommerce.service.CloudService;
-import com.projects.ecommerce.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -28,9 +28,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final ModelMapper modelMapper;
-    private final UserService service;
     private final HandlerExceptionResolver handlerExceptionResolver;
     private final CloudService cloudinaryService;
+    private final ProductRepository productRepository;
 
     @Override
     public CategoryDto create(RequestCategoryDto dto, MultipartFile image) {
@@ -54,8 +54,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto update(Long id, RequestCategoryDto dto, MultipartFile image) {
-        Category existing = categoryRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + id));
+        Category existing = categoryRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + id));
 
         existing.setName(dto.getName());
         existing.setSlug(dto.getSlug());
@@ -66,7 +65,7 @@ public class CategoryServiceImpl implements CategoryService {
                 CloudinaryUploadResult uploaded = cloudinaryService.upload(image); // method below
                 existing.setImage(uploaded.getImage());
                 existing.setPublicId(uploaded.getPublicId());
-                
+
             } catch (Exception e) {
                 throw new RuntimeException("Image upload failed: " + e.getMessage(), e);
             }
@@ -82,10 +81,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         Page<CategoryDto> page1 = page.map(cat -> modelMapper.map(cat, CategoryDto.class));
 
-        String baseUrl = ServletUriComponentsBuilder
-                .fromCurrentContextPath()
-                .build()
-                .toUriString();
+        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
 
         // Fix image URL for each DTO
         page1.getContent().forEach(dto -> {
@@ -108,10 +104,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         Page<CategoryDto> page1 = page.map(cat -> modelMapper.map(cat, CategoryDto.class));
 
-        String baseUrl = ServletUriComponentsBuilder
-                .fromCurrentContextPath()
-                .build()
-                .toUriString();
+        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
 
         // Fix image URL for each DTO
         page1.getContent().forEach(dto -> {
@@ -124,15 +117,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryDto> getAllCategories() {
-        List<CategoryDto> categoryDtos = categoryRepository.findAll()
-                .stream()
-                .map(category -> modelMapper.map(category, CategoryDto.class))
-                .toList();
+        List<CategoryDto> categoryDtos = categoryRepository.findAll().stream().map(category -> modelMapper.map(category, CategoryDto.class)).toList();
 
-        String baseUrl = ServletUriComponentsBuilder
-                .fromCurrentContextPath()
-                .build()
-                .toUriString();
+        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
 
         // FIX
         categoryDtos.forEach(dto -> {
@@ -146,13 +133,11 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     public Category getCategoryById(Long id) {
-        return categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
+        return categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
     }
 
     public Category getCategoryBySlug(String slug) {
-        return categoryRepository.findBySlug(slug)
-                .orElseThrow(() -> new RuntimeException("Category not found with slug: " + slug));
+        return categoryRepository.findBySlug(slug).orElseThrow(() -> new RuntimeException("Category not found with slug: " + slug));
     }
 
     @Override
@@ -160,25 +145,27 @@ public class CategoryServiceImpl implements CategoryService {
     public void delete(Long id) {
         log.info("Request received to delete category with id: {}", id);
 
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.error("Category not found with id: {}", id);
-                    return new IllegalArgumentException("Category not found with id: " + id);
-                });
+        Category category = categoryRepository.findById(id).orElseThrow(() -> {
+            log.error("Category not found with id: {}", id);
+            return new IllegalArgumentException("Category not found with id: " + id);
+        });
 
-        log.info("Category found: {} (image={})", category.getName(), category.getImage());
+        long productCount = productRepository.countByCategoryId(id);
+
+        if (productCount > 0) {
+            log.warn("Category {} has {} products. Deletion blocked.", id, productCount);
+            throw new IllegalStateException("Category contains " + productCount + " products. Reassign before deleting.");
+        }
 
         // Delete stored image if exists
         if (category.getImage() != null && category.getPublicId() != null) {
             log.info("Attempting to delete image with publicId: {}", category.getPublicId());
             try {
-                cloudinaryService.deleteFile(category.getPublicId());
+//                cloudinaryService.deleteFile(category.getPublicId());
                 log.info("Image deleted successfully: {}", category.getImage());
             } catch (Exception e) {
-                log.error("Failed to delete image '{}' for category id {}. Error: {}",
-                        category.getImage(), id, e.getMessage(), e);
-                throw new RuntimeException(
-                        "Failed to delete image: " + e.getMessage(), e);
+                log.error("Failed to delete image '{}' for category id {}. Error: {}", category.getImage(), id, e.getMessage(), e);
+                throw new RuntimeException("Failed to delete image: " + e.getMessage(), e);
             }
         }
 
@@ -186,8 +173,25 @@ public class CategoryServiceImpl implements CategoryService {
         log.info("Category deleted successfully with id: {}", id);
     }
 
+
+    public CategoryDto getCategoryDtoById(Long id) {
+        Category category = categoryRepository.findById(id).orElseThrow();
+        CategoryDto dto = modelMapper.map(category, CategoryDto.class);
+
+        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+
+        // FIX
+        if (dto.getImage() != null && !dto.getImage().startsWith("http")) {
+            dto.setImage(baseUrl + dto.getImage());
+        }
+
+        return dto;
+    }
+
     @Override
     public Long countCategories() {
         return categoryRepository.count();
     }
+
+
 }

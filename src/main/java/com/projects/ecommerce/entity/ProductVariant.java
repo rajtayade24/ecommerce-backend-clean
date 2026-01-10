@@ -17,18 +17,24 @@ public class ProductVariant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private BigDecimal value = BigDecimal.valueOf(0);
 
+    @Column(nullable = false)
     private String unit = "unit";
 
-    private double price;           
+    @Column(nullable = false)
+    private double price;
 
+    @Column(nullable = false)
     private Integer stock = 0;
 
     private String label;
+
     private String  sku;
+
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 }

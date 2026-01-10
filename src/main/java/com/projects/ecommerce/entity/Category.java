@@ -25,6 +25,7 @@ public class Category {
 
     private String description;
 
+    @Column(nullable = false)
     private String image;
 
     private String publicId;

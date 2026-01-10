@@ -32,7 +32,7 @@ public class User implements UserDetails {
     @Email
     private String email;
 
-    //    @Column(unique = true)
+    @Column(nullable = false)
     private String mobile;
 
     @Column(nullable = false)

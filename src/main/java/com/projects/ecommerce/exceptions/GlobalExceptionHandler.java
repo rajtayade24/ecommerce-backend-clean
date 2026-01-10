@@ -1,4 +1,4 @@
-package com.projects.ecommerce.error;
+package com.projects.ecommerce.exceptions;
 
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
@@ -67,8 +67,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<String> handleIllegalState(IllegalStateException ex) {
-        return ResponseEntity.badRequest().body(ex.getMessage());
+    public ResponseEntity<ApiError> handleIllegalState(IllegalStateException ex) {
+
+        ApiError apiError = new ApiError(
+                ex.getMessage(),
+                HttpStatus.CONFLICT
+        );
+        return new ResponseEntity<>(apiError, apiError.getStatusCode());
     }
 
     @ExceptionHandler(Exception.class)
@@ -87,10 +92,23 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiError, apiError.getStatusCode());
     }
 
-
     @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<String> handleMaxSize(MaxUploadSizeExceededException ex) {
-        return ResponseEntity.badRequest().body("File too large. Max allowed size is 10MB.");
+    public ResponseEntity<ApiError> handleMaxSize(MaxUploadSizeExceededException ex) {
+
+        ApiError apiError = new ApiError(
+                "File too large. Max allowed size is 10MB.",
+                HttpStatus.PAYLOAD_TOO_LARGE
+        );
+        return new ResponseEntity<>(apiError, apiError.getStatusCode());
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiError> handleIllegalArgument(IllegalArgumentException ex) {
+        return new ResponseEntity<>(
+                new ApiError(ex.getMessage(), HttpStatus.NOT_FOUND),
+                HttpStatus.NOT_FOUND
+        );
+    }
+
 
 }

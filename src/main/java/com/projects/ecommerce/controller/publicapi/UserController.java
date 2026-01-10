@@ -30,7 +30,6 @@ public class UserController {
                                                     @RequestParam(value = "limit", defaultValue = "6") int limit) {
         return ResponseEntity.ok(userService.suggestKeywords(q, limit));
     }
-                    
 
     // Optional: accept JSON body { "search": "..." }
     @PostMapping("/search/suggestions")

@@ -1,4 +1,4 @@
-package com.projects.ecommerce.error;
+package com.projects.ecommerce.exceptions;
 
 import lombok.Data;
 import org.springframework.http.HttpStatus;
