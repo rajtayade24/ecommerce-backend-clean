@@ -30,17 +30,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -132,7 +128,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto login(LoginRequest dto) {
-        String identifier ;
+        String identifier;
         if (dto.getIdentifier().startsWith("+91") || dto.getIdentifier().contains("@")) {
             identifier = dto.getIdentifier();
         } else {
@@ -142,7 +138,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository
                 .findByEmailOrMobile(identifier, identifier)
                 .orElseThrow(
-                        () -> new UsernameNotFoundException("User not found with identifier: " + identifier);
+                        () -> new UsernameNotFoundException("User not found with identifier: " + identifier));
 
         try {
             Authentication authentication = authenticationManager.authenticate(
