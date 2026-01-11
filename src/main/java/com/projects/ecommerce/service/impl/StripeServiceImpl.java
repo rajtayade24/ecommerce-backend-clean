@@ -45,6 +45,9 @@ public class StripeServiceImpl implements StripeService {
     @Value("${stripe.secretKey}")
     private String secretKey;
 
+    @Value("${stripe.sessionUrl}")
+    private String sessionUrl;
+
     @Override
     @Transactional
     public StripeResponse checkoutProducts(OrderRequest orderRequest) {
@@ -63,8 +66,8 @@ public class StripeServiceImpl implements StripeService {
 
             SessionCreateParams.Builder paramsBuilder = SessionCreateParams.builder()
                     .setMode(SessionCreateParams.Mode.PAYMENT)
-                    .setSuccessUrl("http://localhost:5500/payment-success?session_id={CHECKOUT_SESSION_ID}")
-                    .setCancelUrl("http://localhost:5500/payment-cancel");
+                    .setSuccessUrl(sessionUrl + "/payment-success?session_id={CHECKOUT_SESSION_ID}")
+                    .setCancelUrl(sessionUrl + "/payment-cancel");
 
             // Add metadata - include orderId so we can lookup later
             Map<String, String> metadata = new HashMap<>();
