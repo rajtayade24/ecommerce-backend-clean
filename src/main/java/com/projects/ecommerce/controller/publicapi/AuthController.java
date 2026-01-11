@@ -61,5 +61,4 @@ public class AuthController {
     public ResponseEntity<AddressDto> addAddress(@RequestBody AddAddressRequest request) {
         return ResponseEntity.ok(userService.addAddresses(request));
     }
-
 }

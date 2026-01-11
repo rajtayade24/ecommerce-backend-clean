@@ -1,6 +1,5 @@
 package com.projects.ecommerce.dto;
 
-import com.projects.ecommerce.entity.Address;
 import com.projects.ecommerce.enums.RoleType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,5 +33,5 @@ public class UserDto {
 
     private String token;
 
-    private OffsetDateTime createdAt;
+    private OffsetDateTime createdAt = OffsetDateTime.now();
 }

@@ -132,15 +132,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto login(LoginRequest dto) {
+        String identifier ;
+        if (dto.getIdentifier().startsWith("+91") || dto.getIdentifier().contains("@")) {
+            identifier = dto.getIdentifier();
+        } else {
+            identifier = "+91" + dto.getIdentifier();
+        }
 
         User user = userRepository
-                .findByEmailOrMobile(dto.getIdentifier(), dto.getIdentifier())
+                .findByEmailOrMobile(identifier, identifier)
                 .orElseThrow(
-                        () -> new UsernameNotFoundException("User not found with identifier: " + dto.getIdentifier()));
+                        () -> new UsernameNotFoundException("User not found with identifier: " + identifier);
 
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(dto.getIdentifier(), dto.getPassword()));
+                    new UsernamePasswordAuthenticationToken(identifier, dto.getPassword()));
 
             // Step 3: Retrieve authenticated principal
             User authenticatedUser = (User) authentication.getPrincipal();
