@@ -28,7 +28,7 @@ public interface UserService {
 
     void deleteFile(String filePath);
 
-    List<AddressDto> getAddresses(Long id);
+    List<AddressDto> getAddresses();
 
     User getCurrentUser();
 

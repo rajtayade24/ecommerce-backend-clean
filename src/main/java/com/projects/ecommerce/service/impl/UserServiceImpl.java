@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
 //        if (user != null)
 //            throw new IllegalArgumentException("user already found");
 
-       User user = modelMapper.map(userDto, User.class);
+        User user = modelMapper.map(userDto, User.class);
 
         // String identifier = userDto.getEmail();
         // if (identifier.contains("@")) {
@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
         if (userDto.getMobile().startsWith("+91")) {
             user.setMobile(userDto.getMobile());
         } else {
-            user.setMobile("+91"+userDto.getMobile());
+            user.setMobile("+91" + userDto.getMobile());
         }
 
         // Encrypt password
@@ -269,9 +269,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<AddressDto> getAddresses(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+    public List<AddressDto> getAddresses() {
+        User user = getCurrentUser();
 
         return user.getAddresses()
                 .stream().map(address -> {

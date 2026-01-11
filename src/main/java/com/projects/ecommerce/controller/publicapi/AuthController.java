@@ -51,9 +51,9 @@ public class AuthController {
         return ResponseEntity.ok(userService.me(authentication));
     }
 
-    @PostMapping("/addresses/{id}")
-    public ResponseEntity<List<AddressDto>> getUserAddresses(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getAddresses(id));
+    @GetMapping("/addresses")
+    public ResponseEntity<List<AddressDto>> getUserAddresses() {
+        return ResponseEntity.ok(userService.getAddresses());
     }
 
 
