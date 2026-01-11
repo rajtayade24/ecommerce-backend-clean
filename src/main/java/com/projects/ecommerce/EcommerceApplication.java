@@ -9,9 +9,9 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
 import java.util.Arrays;
 
-//@EnableSpringDataWebSupport(
-//        pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO
-//)
+@EnableSpringDataWebSupport(
+        pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO
+)
 @SpringBootApplication
 public class EcommerceApplication {
 
