@@ -16,5 +16,4 @@ public class CheckoutPreviewResponse {
     private double subtotal;
     private double deliveryFee;
     private double total;
-
 }

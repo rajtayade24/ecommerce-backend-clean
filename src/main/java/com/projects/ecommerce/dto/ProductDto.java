@@ -16,15 +16,14 @@ import java.util.List;
 public class ProductDto {
 
     private Long id;
-    private Long category;
     private String name;
     private String slug;
-
     private String description;
+    private Long category;
+
 
     private java.math.BigDecimal price;
     private String unit;
-    private OffsetDateTime createdAt;
 
     private long inStock;
     private boolean isFeatured;
@@ -35,5 +34,6 @@ public class ProductDto {
     private List<String> images = new ArrayList<>();
 
     private List<ProductVariant> variants = new ArrayList<>();
+    private OffsetDateTime createdAt;
 }
 

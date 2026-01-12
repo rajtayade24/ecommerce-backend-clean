@@ -32,6 +32,4 @@ public class AdminDashboardController {
     public BigDecimal getRevenue() {
         return orderService.getTotalRevenue();
     }
-
-
 }

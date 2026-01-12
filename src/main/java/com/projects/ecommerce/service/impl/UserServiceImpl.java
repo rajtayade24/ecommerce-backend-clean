@@ -70,6 +70,7 @@ public class UserServiceImpl implements UserService {
         // } else {
         // user.setMobile(identifier);
         // }
+
         if (userDto.getMobile().startsWith("+91")) {
             user.setMobile(userDto.getMobile());
         } else {
@@ -85,19 +86,13 @@ public class UserServiceImpl implements UserService {
             user.setRoles(Set.of(RoleType.USER)); // default role
         }
 
-        if (user.getAddresses() != null) {
-            for (Address address : user.getAddresses()) {
-                address.setUser(user);
-            }
-        }
-
-        System.out.println("incomming addresses" + userDto.getAddresses());
         List<Address> addresses = new ArrayList<>();
         for (AddressDto aDto : userDto.getAddresses()) {
             Address addr = modelMapper.map(aDto, Address.class);
             addr.setUser(user);
             addresses.add(addr);
         }
+
         user.setAddresses(addresses);
 
         // TODO: Save the user in DB using service/repo
@@ -111,20 +106,6 @@ public class UserServiceImpl implements UserService {
 
         return response;
     }
-
-    // void addAdmin() {
-    // UserDto user = new UserDto();
-    // user.setId(1L);
-    // user.setEmail("admin@gmail.com");
-    // user.setPassword("admin123"); // In real apps, always hash passwords!
-    // user.setName("John Doe");
-    // user.setAddress("123, Main Street");
-    // user.setCity("Mumbai");
-    // user.setState("Maharashtra");
-    // user.setPincode("400001");
-    // user.setRoles(Set.of(RoleType.ADMIN));
-    // user.setActive(true);
-    // }
 
     @Override
     public UserDto login(LoginRequest dto) {
@@ -172,6 +153,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public UserDto me(Authentication authentication) {
         Long userId = ((User) authentication.getPrincipal()).getId();
 
@@ -181,6 +163,8 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(user, UserDto.class);
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public AddressDto addAddresses(AddAddressRequest request) {
         User user = getCurrentUser();
 
@@ -191,6 +175,7 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(saved, AddressDto.class);
     }
 
+    @Override
     @Transactional
     public ResponseEntity<UserDto> handleOAuth2LoginRequest(OAuth2User oAuth2User, String registrationId) {
         // fetch providerType and providerId
@@ -249,26 +234,26 @@ public class UserServiceImpl implements UserService {
     // }
     // }
 
-    @Override
-    public void deleteFile(String filePath) {
-        try {
-            // Normalize path: remove leading slash
-            if (filePath.startsWith("/")) {
-                filePath = filePath.substring(1);
-            }
-
-            Path path = Paths.get(filePath);
-
-            if (Files.exists(path)) {
-                Files.delete(path);
-            } else {
-                throw new RuntimeException("File not found: " + filePath);
-            }
-
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to delete file: " + filePath, e);
-        }
-    }
+//    @Override
+//    public void deleteFile(String filePath) {
+//        try {
+//            // Normalize path: remove leading slash
+//            if (filePath.startsWith("/")) {
+//                filePath = filePath.substring(1);
+//            }
+//
+//            Path path = Paths.get(filePath);
+//
+//            if (Files.exists(path)) {
+//                Files.delete(path);
+//            } else {
+//                throw new RuntimeException("File not found: " + filePath);
+//            }
+//
+//        } catch (IOException e) {
+//            throw new RuntimeException("Failed to delete file: " + filePath, e);
+//        }
+//    }
 
     @Override
     public List<AddressDto> getAddresses() {

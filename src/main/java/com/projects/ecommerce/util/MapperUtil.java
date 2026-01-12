@@ -47,9 +47,13 @@ public class MapperUtil {
         dto.setName(product.getName());
         dto.setSlug(product.getSlug());
         dto.setDescription(product.getDescription());
-        dto.setCreatedAt(product.getCreatedAt());
+        // Category ID
+        if (product.getCategory() != null) {
+            dto.setCategory(product.getCategory().getId());
+        }
         dto.setFeatured(product.isFeatured());
         dto.setOrganic(product.isOrganic());
+        dto.setCreatedAt(product.getCreatedAt());
 
         // Nutrition
         dto.setNutrition(product.getNutrition());
@@ -59,14 +63,6 @@ public class MapperUtil {
                 .fromCurrentContextPath()
                 .build()
                 .toUriString();
-
-//        dto.setImages(
-//                product.getImages()
-//                        .stream()
-//                        .map(img -> (img != null && img.startsWith("http"))
-//                                ? img
-//                                : baseUrl + img)
-//                        .collect(Collectors.toList()));
 
         dto.setImages(
                 product.getImages()
@@ -80,15 +76,9 @@ public class MapperUtil {
                         .toList()
         );
 
-
         // Variants
         if (product.getVariants() != null) {
             dto.setVariants(new ArrayList<>(product.getVariants())); // copy existing variants
-        }
-
-        // Category ID
-        if (product.getCategory() != null) {
-            dto.setCategory(product.getCategory().getId());
         }
 
         long totalStock = product.getVariants()
@@ -310,7 +300,6 @@ public class MapperUtil {
                         order.getPaymentMethod() != null
                                 ? order.getPaymentMethod().name()
                                 : null)
-
                 .stripeSessionId(order.getStripeSessionId())
                 .stripePaymentIntentId(order.getStripePaymentIntentId())
 
@@ -359,13 +348,13 @@ public class MapperUtil {
         return OrderItemResponse.builder()
                 .productId(item.getProductId())
                 .productName(item.getProductName())
+                .image(image) // fill later if needed from product service
                 .variantId(item.getVariantId())
                 .variantLabel(item.getVariantLabel())
                 .sku(item.getSku())
                 .unitPrice(item.getUnitPrice())
                 .quantity(item.getQuantity())
                 .lineTotal(item.getLineTotal())
-                .image(image) // fill later if needed from product service
                 .build();
     }
 

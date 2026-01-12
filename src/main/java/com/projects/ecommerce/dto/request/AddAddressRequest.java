@@ -1,9 +1,15 @@
 package com.projects.ecommerce.dto.request;
 
-public class AddAddressRequest {
+import lombok.*;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class AddAddressRequest {
     private String name;
-    private String address;
+    private String line1;
+    private String line2;
 
     private String city;
     private String state;

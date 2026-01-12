@@ -26,7 +26,6 @@ public class CreateProductDto {
 
     private boolean isFeatured;
     private boolean isOrganic;
-    private boolean inStock;
 
     private ProductNutrition nutrition;
 

@@ -26,7 +26,7 @@ public interface UserService {
 
 //    String upload(MultipartFile file);
 
-    void deleteFile(String filePath);
+//    void deleteFile(String filePath);
 
     List<AddressDto> getAddresses();
 

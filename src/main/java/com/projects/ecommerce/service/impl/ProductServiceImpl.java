@@ -40,7 +40,6 @@ public class ProductServiceImpl implements ProductService {
     private final ModelMapper modelMapper;
     private final CategoryService categoryService;
     private final CartItemRepository cartItemRepository;
-    private final UserService service;
     private final MapperUtil mapper;
     private final CloudService cloudinaryService;
 
@@ -97,7 +96,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         product.getVariants().forEach(v -> {
-            v.setLabel(v.getValue().toString() + v.getUnit());
+            v.setLabel(product.getName() + v.getValue().toString() + v.getUnit());
             v.setSku(
                     category.getName().trim().toUpperCase()
                             + "-"
@@ -188,7 +187,6 @@ public class ProductServiceImpl implements ProductService {
 
         return mapper.mapProductToProductDto(updated);
     }
-
 
     @Override
     public Page<ProductDto> getProducts(Pageable pageable) {
