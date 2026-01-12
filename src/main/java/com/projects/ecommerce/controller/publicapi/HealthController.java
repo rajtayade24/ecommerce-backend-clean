@@ -19,11 +19,10 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class HealthController {
 
-    @RequestMapping(value = "/", method = {RequestMethod.GET, RequestMethod.HEAD})
-    public ResponseEntity<Void> root() {
-        return ResponseEntity.ok().build();
+    @GetMapping("/")
+    public ResponseEntity<String> root() {
+        return ResponseEntity.ok("Backend is running");
     }
-
 
     @GetMapping("/health")
     public ResponseEntity<String> health() {
