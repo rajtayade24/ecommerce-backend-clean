@@ -54,6 +54,7 @@ public class AdminProductController {
         return ResponseEntity.ok(count);
     }
 
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         productService.delete(id);
