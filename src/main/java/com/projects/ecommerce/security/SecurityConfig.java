@@ -48,7 +48,7 @@ public class SecurityConfig {
                 // Authorization rules
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight
-                                .requestMatchers("/", "/health", "/auth/login", "/auth/signup").permitAll()
+                                .requestMatchers("/", "/health", "/actuator/health", "/auth/login", "/auth/signup").permitAll()
                                 .requestMatchers("/otp/send", "/otp/verify").permitAll()
                                 .requestMatchers("/public/**", "/uploads/**").permitAll()
                                 .requestMatchers("/search/suggestions/**").permitAll()

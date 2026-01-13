@@ -21,7 +21,7 @@ public class HealthController {
 
     @GetMapping("/")
     public ResponseEntity<String> root() {
-        return ResponseEntity.ok("Backend is running");
+        return ResponseEntity.ok("Server is running");
     }
 
     @GetMapping("/health")
