@@ -24,9 +24,6 @@ public interface UserService {
 
      UserDto me(Authentication authentication);
 
-//    String upload(MultipartFile file);
-
-//    void deleteFile(String filePath);
 
     List<AddressDto> getAddresses();
 

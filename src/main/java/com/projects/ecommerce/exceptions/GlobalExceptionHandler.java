@@ -1,5 +1,6 @@
 package com.projects.ecommerce.exceptions;
 
+import com.projects.ecommerce.service.impl.FeedbackServiceImpl;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -7,16 +8,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.nio.file.AccessDeniedException;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-
     // Username Not Found
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ApiError> handleUsernameNotFoundException(UsernameNotFoundException ex) {
@@ -76,21 +78,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiError, apiError.getStatusCode());
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleGeneralException(Exception ex) {
-
-        log.error("Exception occurred:", ex);
-
-        String cause = ex.getCause() != null ? ex.getCause().getMessage() : "No cause";
-
-        ApiError apiError = new ApiError(
-                ex.getMessage(),
-                cause,
-                HttpStatus.INTERNAL_SERVER_ERROR
-        );
-
-        return new ResponseEntity<>(apiError, apiError.getStatusCode());
-    }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ApiError> handleMaxSize(MaxUploadSizeExceededException ex) {
@@ -110,5 +97,39 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(FeedbackServiceImpl.ResourceNotFoundException.class)
+    public ResponseEntity<ApiError> handleNotFound(FeedbackServiceImpl.ResourceNotFoundException ex) {
+        return new ResponseEntity<>(
+                new ApiError(ex.getMessage(), HttpStatus.NOT_FOUND),
+                HttpStatus.NOT_FOUND
+        );
+    }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex) {
+        String message = ex.getBindingResult().getFieldErrors()
+                .stream()
+                .map(e -> e.getField() + " " + e.getDefaultMessage())
+                .collect(Collectors.joining("; "));
+        return new ResponseEntity<>(
+                new ApiError(message, HttpStatus.BAD_REQUEST),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+    
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiError> handleGeneralException(Exception ex) {
+
+        log.error("Exception occurred:", ex);
+
+        String cause = ex.getCause() != null ? ex.getCause().getMessage() : "No cause";
+
+        ApiError apiError = new ApiError(
+                ex.getMessage(),
+                cause,
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
+
+        return new ResponseEntity<>(apiError, apiError.getStatusCode());
+    }
 }

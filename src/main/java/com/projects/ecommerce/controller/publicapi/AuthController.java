@@ -5,6 +5,7 @@ import com.projects.ecommerce.dto.UserDto;
 import com.projects.ecommerce.dto.request.AddAddressRequest;
 import com.projects.ecommerce.dto.request.LoginRequest;
 import com.projects.ecommerce.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -56,9 +57,11 @@ public class AuthController {
         return ResponseEntity.ok(userService.getAddresses());
     }
 
-
     @PostMapping("/addresses/add")
-    public ResponseEntity<AddressDto> addAddress(@RequestBody AddAddressRequest request) {
+    public ResponseEntity<AddressDto> addAddress(
+            @RequestBody AddAddressRequest request) {
+
         return ResponseEntity.ok(userService.addAddresses(request));
     }
+
 }

@@ -28,13 +28,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
-    private final UserService service;
+    private final UserService userService;
     private final OrderRepository orderRepository;
     private final ModelMapper modelMapper;
     private final MapperUtil mapper;
 
     public Page<OrderResponse> getUserOrders(Pageable pageable) {
-        User user = service.getCurrentUser();
+        User user = userService.getCurrentUser();
 
         Page<Order> ordersPage = orderRepository.findByUser(user, pageable);
         return ordersPage.map(mapper::mapOrderToResponse);

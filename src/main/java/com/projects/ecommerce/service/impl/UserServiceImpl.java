@@ -164,15 +164,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public AddressDto addAddresses(AddAddressRequest request) {
         User user = getCurrentUser();
 
-        Address address = modelMapper.map(request, Address.class);
-        address.setUser(user);
+        try {
+            Address address = modelMapper.map(request, Address.class);
+            address.setUser(user);
 
-        Address saved = addressRepository.save(address);
-        return modelMapper.map(saved, AddressDto.class);
+            Address saved = addressRepository.save(address);
+            return modelMapper.map(saved, AddressDto.class);
+        } catch (Exception e) {
+            throw new RuntimeException("An unexpected error occur during adding the address" + e);
+        }
     }
 
     @Override

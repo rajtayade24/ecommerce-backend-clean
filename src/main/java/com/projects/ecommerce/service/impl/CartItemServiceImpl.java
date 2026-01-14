@@ -198,7 +198,7 @@ public class CartItemServiceImpl implements CartItemService {
                         String imagePath = img.getImage(); // ✅ STRING
                         return imagePath.startsWith("http")
                                 ? imagePath
-                                : baseUrl + "/" + imagePath;
+                                : baseUrl + imagePath;
                     })
                     .orElse(null);
 
