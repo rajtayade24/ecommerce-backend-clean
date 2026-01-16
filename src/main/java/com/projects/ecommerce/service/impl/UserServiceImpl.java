@@ -172,6 +172,10 @@ public class UserServiceImpl implements UserService {
             Address address = modelMapper.map(request, Address.class);
             address.setUser(user);
 
+            if (request.getPhone() == null || request.getPhone().isBlank()) {
+                address.setPhone(user.getMobile());
+            }
+
             Address saved = addressRepository.save(address);
             return modelMapper.map(saved, AddressDto.class);
         } catch (Exception e) {
