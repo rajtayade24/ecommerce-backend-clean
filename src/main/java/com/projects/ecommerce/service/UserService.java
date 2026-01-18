@@ -5,6 +5,7 @@ import com.projects.ecommerce.dto.UserDto;
 import com.projects.ecommerce.dto.request.AddAddressRequest;
 import com.projects.ecommerce.dto.request.LoginRequest;
 import com.projects.ecommerce.entity.User;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -40,4 +41,6 @@ public interface UserService {
      List<String> suggestKeywords(String q, int limit);
 
     ResponseEntity<UserDto> handleOAuth2LoginRequest(OAuth2User oAuth2User, String registrationId);
+
+    String uploadImage(@Valid MultipartFile image);
 }

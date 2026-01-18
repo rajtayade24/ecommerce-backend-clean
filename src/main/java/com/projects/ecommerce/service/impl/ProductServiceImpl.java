@@ -41,7 +41,7 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryService categoryService;
     private final CartItemRepository cartItemRepository;
     private final MapperUtil mapper;
-    private final CloudService cloudinaryService;
+    private final CloudService cloudService;
 
     @Override
     public ProductDto create(@Valid CreateProductDto dto, MultipartFile[] images) {
@@ -69,7 +69,7 @@ public class ProductServiceImpl implements ProductService {
                 List<ProductImage> productImages = Arrays.stream(images)
                         .filter(img -> img != null && !img.isEmpty())
                         .map(file -> {
-                            CloudinaryUploadResult result = cloudinaryService.upload(file);
+                            CloudinaryUploadResult result = cloudService.upload(file);
 
                             ProductImage image = new ProductImage();
                             image.setImage(result.getImage());
@@ -149,7 +149,7 @@ public class ProductServiceImpl implements ProductService {
                 List<ProductImage> productImages = Arrays.stream(images)
                         .filter(img -> img != null && !img.isEmpty())
                         .map(file -> {
-                            CloudinaryUploadResult result = cloudinaryService.upload(file);
+                            CloudinaryUploadResult result = cloudService.upload(file);
 
                             ProductImage image = new ProductImage();
                             image.setImage(result.getImage());
@@ -281,7 +281,7 @@ public class ProductServiceImpl implements ProductService {
 //            try {
 //                product.getImages().stream()
 //                        .filter(img -> img.getPublicId() != null && !img.getPublicId().isEmpty())
-//                        .forEach(img -> cloudinaryService.deleteFile(img.getPublicId()));
+//                        .forEach(img -> cloudService.deleteFile(img.getPublicId()));
 //            } catch (Exception e) {
 //                throw new RuntimeException("Failed to delete image: " + e.getMessage(), e);
 //            }

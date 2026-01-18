@@ -1,11 +1,18 @@
 package com.projects.ecommerce.controller.admin;
 
 
+import com.projects.ecommerce.dto.CategoryDto;
+import com.projects.ecommerce.dto.request.RequestCategoryDto;
 import com.projects.ecommerce.service.OrderService;
+import com.projects.ecommerce.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 
@@ -27,9 +34,18 @@ import java.math.BigDecimal;
 public class AdminDashboardController {
 
     private final OrderService orderService;
+    private final UserService userService;
 
     @GetMapping("/revenue")
     public BigDecimal getRevenue() {
         return orderService.getTotalRevenue();
     }
+
+
+    @PostMapping("/logo")
+    public ResponseEntity<String> uploadImg(@RequestPart("image") @Valid MultipartFile image) {
+        String img = userService.uploadImage(image);
+        return ResponseEntity.ok(img);
+    }
+
 }

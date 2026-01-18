@@ -29,7 +29,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final ModelMapper modelMapper;
     private final HandlerExceptionResolver handlerExceptionResolver;
-    private final CloudService cloudinaryService;
+    private final CloudService cloudService;
     private final ProductRepository productRepository;
 
     @Override
@@ -39,7 +39,7 @@ public class CategoryServiceImpl implements CategoryService {
         try {
             // Handle image upload
             if (image != null && !image.isEmpty()) {
-                CloudinaryUploadResult uploaded = cloudinaryService.upload(image); // method below
+                CloudinaryUploadResult uploaded = cloudService.upload(image); // method below
                 category.setImage(uploaded.getImage());
                 category.setPublicId(uploaded.getPublicId());
             }
@@ -62,7 +62,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         if (image != null && !image.isEmpty()) {
             try {
-                CloudinaryUploadResult uploaded = cloudinaryService.upload(image); // method below
+                CloudinaryUploadResult uploaded = cloudService.upload(image); // method below
                 existing.setImage(uploaded.getImage());
                 existing.setPublicId(uploaded.getPublicId());
 
@@ -161,7 +161,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (category.getImage() != null && category.getPublicId() != null) {
             log.info("Attempting to delete image with publicId: {}", category.getPublicId());
             try {
-//                cloudinaryService.deleteFile(category.getPublicId());
+//                cloudService.deleteFile(category.getPublicId());
                 log.info("Image deleted successfully: {}", category.getImage());
             } catch (Exception e) {
                 log.error("Failed to delete image '{}' for category id {}. Error: {}", category.getImage(), id, e.getMessage(), e);

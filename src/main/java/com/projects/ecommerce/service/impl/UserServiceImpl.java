@@ -5,6 +5,7 @@ import com.projects.ecommerce.dto.AddressDto;
 import com.projects.ecommerce.dto.UserDto;
 import com.projects.ecommerce.dto.request.AddAddressRequest;
 import com.projects.ecommerce.dto.request.LoginRequest;
+import com.projects.ecommerce.dto.response.CloudinaryUploadResult;
 import com.projects.ecommerce.entity.Address;
 import com.projects.ecommerce.entity.User;
 import com.projects.ecommerce.enums.AuthProviderType;
@@ -14,8 +15,10 @@ import com.projects.ecommerce.repository.CategoryRepository;
 import com.projects.ecommerce.repository.ProductRepository;
 import com.projects.ecommerce.repository.UserRepository;
 import com.projects.ecommerce.security.AuthUtil;
+import com.projects.ecommerce.service.CloudService;
 import com.projects.ecommerce.service.UserService;
 import com.projects.ecommerce.specification.UserSpecification;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -30,6 +33,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
@@ -51,7 +55,7 @@ public class UserServiceImpl implements UserService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final AddressRepository addressRepository;
-    private final HandlerExceptionResolver handlerExceptionResolver;
+    private final CloudService cloudService;
 
     @Override
     @Transactional
@@ -364,5 +368,11 @@ public class UserServiceImpl implements UserService {
             if (target.size() >= limit)
                 break;
         }
+    }
+
+
+    public String uploadImage(@Valid MultipartFile image) {
+        CloudinaryUploadResult result = cloudService.upload(image);
+        return result.getImage();
     }
 }
