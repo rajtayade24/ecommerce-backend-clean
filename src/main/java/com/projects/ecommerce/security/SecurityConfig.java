@@ -48,11 +48,11 @@ public class SecurityConfig {
                 // Authorization rules
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight
-                                .requestMatchers("/", "/health", "/actuator/health", "/auth/login", "/auth/signup").permitAll()
+                                .requestMatchers("/", "/health", "/actuator/health", "/auth/login", "/auth/signup", "/auth/me/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/categories/**", "/products/**").permitAll()
                                 .requestMatchers("/otp/send", "/otp/verify").permitAll()
                                 .requestMatchers("/public/**", "/uploads/**").permitAll()
                                 .requestMatchers("/search/suggestions/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/categories/**", "/products/**").permitAll()
                                 .requestMatchers("/payment-success/**", "/payment-cancel").permitAll()
                                 .requestMatchers("/admin/**").hasRole(RoleType.ADMIN.name()) // only admin can POST
 //
