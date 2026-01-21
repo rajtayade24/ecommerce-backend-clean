@@ -246,7 +246,7 @@ public class UserServiceImpl implements UserService {
     // }
     // }
 
-//    @Override
+    //    @Override
 //    public void deleteFile(String filePath) {
 //        try {
 //            // Normalize path: remove leading slash
@@ -267,15 +267,14 @@ public class UserServiceImpl implements UserService {
 //        }
 //    }
 
+    @Transactional(readOnly = true)
     @Override
     public List<AddressDto> getAddresses() {
         User user = getCurrentUser();
 
         return user.getAddresses()
                 .stream().map(address -> {
-                    AddressDto dto = modelMapper.map(address, AddressDto.class);
-                    dto.setUserId(address.getUser().getId());
-                    return dto;
+                    return modelMapper.map(address, AddressDto.class);
                 }).toList();
     }
 

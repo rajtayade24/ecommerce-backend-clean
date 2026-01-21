@@ -21,10 +21,6 @@ public class ProductDto {
     private String description;
     private Long category;
 
-
-    private java.math.BigDecimal price;
-    private String unit;
-
     private long inStock;
     private boolean isFeatured;
     private boolean isOrganic;

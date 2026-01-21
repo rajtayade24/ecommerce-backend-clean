@@ -1,5 +1,6 @@
 package com.projects.ecommerce.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.projects.ecommerce.enums.AuthProviderType;
 import com.projects.ecommerce.enums.RoleType;
@@ -31,9 +32,10 @@ public class User implements UserDetails {
     @Email
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String mobile;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
 
@@ -57,6 +59,11 @@ public class User implements UserDetails {
     private AuthProviderType providerType;
 
     private OffsetDateTime createdAt = OffsetDateTime.now();
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = OffsetDateTime.now();
+    }
 
     //    important for roles managements
     @Override
