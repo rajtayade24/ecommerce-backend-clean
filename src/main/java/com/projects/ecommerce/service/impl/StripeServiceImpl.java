@@ -77,9 +77,14 @@ public class StripeServiceImpl implements StripeService {
             paramsBuilder.putAllMetadata(metadata);
 
             // Add line items
+            long totalAmount = 0;
             for (OrderItem it : order.getItems()) {
                 long unitAmount = it.getUnitPrice().multiply(BigDecimal.valueOf(100)).longValue();
+                totalAmount += unitAmount * it.getQuantity();
 
+                if ("inr".equals(currency) && totalAmount < 5000) {
+                    throw new IllegalArgumentException("Minimum order amount is ₹50");
+                }
                 SessionCreateParams.LineItem.PriceData.ProductData productData = SessionCreateParams.LineItem.PriceData.ProductData
                         .builder()
                         .setName(it.getProductName() == null ? "Product" : it.getProductName())
