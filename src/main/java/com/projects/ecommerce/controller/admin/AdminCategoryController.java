@@ -29,7 +29,7 @@ import java.io.IOException;
 @RestController
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
-@RequestMapping("/admin/categories")
+@RequestMapping("/api/admin/categories")
 public class AdminCategoryController {
 
     private final CategoryService categoryService;

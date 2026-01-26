@@ -337,13 +337,9 @@ public class MapperUtil {
                 .map(img -> {
                     String imgPath = img.getImage();
 
-                    System.out.println("imageimageimagepath: " + imgPath);
                     return imgPath.startsWith("http") ? imgPath : baseUrl + imgPath;
                 })
                 .orElse(null);
-
-        System.out.println("imageimageimage: " + image);
-
 
         return OrderItemResponse.builder()
                 .productId(item.getProductId())

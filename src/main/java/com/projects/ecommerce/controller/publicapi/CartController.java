@@ -27,7 +27,7 @@ import java.util.Map;
         "*"
 })
 @RestController
-@RequestMapping("/carts")
+@RequestMapping("/api/carts")
 @RequiredArgsConstructor
 public class CartController {
 

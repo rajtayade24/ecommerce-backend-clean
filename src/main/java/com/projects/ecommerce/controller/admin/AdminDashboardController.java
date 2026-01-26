@@ -30,7 +30,7 @@ import java.math.BigDecimal;
 @RestController
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 public class AdminDashboardController {
 
     private final OrderService orderService;

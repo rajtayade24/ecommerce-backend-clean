@@ -5,8 +5,31 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class UiController {
-    @GetMapping("/")
-    public String forwardIndex() {
+
+    @GetMapping({
+            "/",
+            "/products/**",
+            "/categories/**",
+            "/verify/**",
+            "/cart/**",
+            "/me/**",
+            "/order/**",
+            "/payment-success/**",
+            "/about",
+            "/feedbacks",
+            "/term-service",
+            "/privacy-policy",
+            "/admin/**"
+    })
+    public String forward() {
         return "forward:/index.html";
     }
+
+//    @GetMapping("/{path:[^\\.]*}") // ❌ This mapping only matches ONE path segment
+//    public String forward() {
+//        return "forward:/index.html";
+//    }
+//    public String forwardIndex() {
+//        return "forward:/index.html";
+//    }
 }

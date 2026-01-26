@@ -25,7 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 })
 @RestController
 @PreAuthorize("hasRole('ADMIN')")
-@RequestMapping("/admin/products")
+@RequestMapping("/api/admin/products")
 @RequiredArgsConstructor
 public class AdminProductController {
 

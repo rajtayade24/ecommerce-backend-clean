@@ -24,7 +24,7 @@ public class HealthController {
 //        return ResponseEntity.ok("Server is running");
 //    }
 
-    @GetMapping("/health")
+    @GetMapping("/api/health")
     public ResponseEntity<String> health() {
         return ResponseEntity.ok("UP");
     }

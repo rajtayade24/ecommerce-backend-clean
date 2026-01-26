@@ -20,7 +20,7 @@ import java.util.Map;
         "https://social-media-frontend-nbdo.vercel.app",
         "*"
 })
-@RequestMapping("/otp")
+@RequestMapping("/api/otp")
 @RestController
 @Slf4j
 @RequiredArgsConstructor
