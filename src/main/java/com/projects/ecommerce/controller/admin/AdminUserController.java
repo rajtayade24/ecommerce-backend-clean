@@ -40,9 +40,16 @@ public class AdminUserController {
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Boolean active,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "15") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+            @RequestParam(defaultValue = "15") int size) {
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(
+                        Sort.Order.desc("createdAt"),
+                        Sort.Order.desc("id")
+                )
+        );
 
         Page<UserDto> userPage = service.getUsers(search, active, pageable);
         return ResponseEntity.ok(userPage);
@@ -61,8 +68,7 @@ public class AdminUserController {
     @PatchMapping("/{id}")
     public ResponseEntity<UserDto> setUserActive(
             @PathVariable Long id,
-            @RequestBody Map<String, Boolean> body
-    ) {
+            @RequestBody Map<String, Boolean> body) {
         Boolean active = body.get("active");
 
         if (active == null) {

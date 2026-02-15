@@ -34,6 +34,9 @@ public final class UserSpecification {
         };
     }
 
+
+
+
     /**
      * Combine non-null specifications
      */

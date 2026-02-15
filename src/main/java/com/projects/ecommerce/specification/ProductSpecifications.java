@@ -61,23 +61,6 @@ public final class ProductSpecifications {
         };
     }
 
-
-//
-//    // Compose helper
-//    public static Specification<Product> combine(
-//            String search,
-//            String categorySlug,
-//            Boolean isOrganic,
-//            Boolean isFeatured
-//    ) {   
-//        Specification<Product> spec = Specification.where(null);
-//        spec = spec.and(hasSearch(search));
-//        spec = spec.and(hasCategorySlug(categorySlug));
-//        spec = spec.and(isOrganic(isOrganic));
-//        spec = spec.and(isFeatured(isFeatured));
-//        return spec;
-//    }
-//}
     /**
      * Combine non-null specs. Starts with a conjunction (always true) to avoid null / ambiguity issues.
      */

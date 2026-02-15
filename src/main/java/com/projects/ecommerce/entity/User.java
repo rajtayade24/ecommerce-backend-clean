@@ -20,7 +20,12 @@ import java.util.*;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "users")
+@Table(
+        name = "users",
+        indexes = {
+                @Index(name = "idx_users_provider", columnList = "provider_type, provider_id")
+        }
+)
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +37,7 @@ public class User implements UserDetails {
     @Email
     private String email;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true)     // This automatically creates a unique index
     private String mobile;
 
     @JsonIgnore
