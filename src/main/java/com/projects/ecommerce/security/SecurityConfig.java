@@ -66,6 +66,20 @@ public class SecurityConfig {
                                         "/privacy-policy",
                                         "/payment-success/**"
                                 ).permitAll()
+                                 .requestMatchers(
+                                        "/api/index.html",
+                                        "/api/assets/**",
+                                        "/api/favicon.ico",
+                                        "/api/verify/**",
+                                        "/api/products/**",
+                                        "/api/categories/**",
+                                        "/api/cart/**",
+                                        "/api/about",
+                                        "/api/feedbacks",
+                                        "/api/term-service",
+                                        "/api/privacy-policy",
+                                        "/api/payment-success/**"
+                                ).permitAll()
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight
                                 .requestMatchers("/api/health", "/api/actuator/health", "/api/auth/login", "/api/auth/signup", "/api/auth/me/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/categories/**", "/api/products/**").permitAll()
