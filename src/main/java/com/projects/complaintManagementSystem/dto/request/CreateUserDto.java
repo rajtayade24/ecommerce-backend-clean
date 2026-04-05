@@ -1,20 +1,24 @@
-package com.example.complaintManagementSystem.dto.request;
+package com.projects.complaintManagementSystem.dto.request;
 
-import com.example.complaintManagementSystem.enums.RoleType;
+import com.projects.complaintManagementSystem.dto.AddressDto;
+import com.projects.complaintManagementSystem.enums.RoleType;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 
 public class CreateUserDto {
+
+    private String firstName;
+    private String middleName;
+    private String lastName;
 
     private String mobile;
     private String email;
 
     private String password;
 
-    private String name;
-
-    private RoleType role = RoleType.USER;
-
-    private boolean active = true;
+    private List<AddressDto> addresses = new ArrayList<>();
 }

@@ -1,4 +1,4 @@
-package com.example.complaintManagementSystem.enums;
+package com.projects.complaintManagementSystem.enums;
 
 public enum AuthProviderType {
     GOOGLE ,

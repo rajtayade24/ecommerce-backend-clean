@@ -96,11 +96,11 @@
         </dependency>
 
         <!-- Twilio -->
-        <dependency>
+        <!-- <dependency>
             <groupId>com.twilio.sdk</groupId>
             <artifactId>twilio</artifactId>
             <version>8.31.0</version>
-        </dependency>
+        </dependency> -->
 
         <!-- Mail -->
         <dependency>
@@ -126,11 +126,11 @@
             <optional>true</optional>
         </dependency>
 
-        <dependency>
+        <!-- <dependency>
             <groupId>com.stripe</groupId>
             <artifactId>stripe-java</artifactId>
             <version>26.7.0</version>
-        </dependency>
+        </dependency> -->
 
         <!--        oauth2 provider-->
         <dependency>
@@ -138,11 +138,11 @@
             <artifactId>spring-boot-starter-oauth2-client</artifactId>
         </dependency>
 
-        <dependency>
+        <!-- <dependency>
             <groupId>com.cloudinary</groupId>
             <artifactId>cloudinary-http44</artifactId>
             <version>1.38.0</version>
-        </dependency>
+        </dependency> -->
 
         <!-- OkHttp HTTP client for Supabase Storage API -->
         <dependency>
@@ -151,11 +151,11 @@
             <version>4.11.0</version>
         </dependency>
 
-        <dependency>
+        <!-- <dependency>
             <groupId>com.google.firebase</groupId>
             <artifactId>firebase-admin</artifactId>
             <version>9.1.1</version>
-        </dependency>
+        </dependency> -->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

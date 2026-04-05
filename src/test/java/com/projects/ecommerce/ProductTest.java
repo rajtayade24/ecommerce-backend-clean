@@ -1,10 +1,10 @@
-//package com.projects.ecommerce;
+//package com.projects.complaintManagementSystem;
 //
 //
-//import com.projects.ecommerce.dto.request.CreateProductDto;
-//import com.projects.ecommerce.entity.ProductNutrition;
-//import com.projects.ecommerce.entity.ProductVariant;
-//import com.projects.ecommerce.service.UserService;
+//import com.projects.complaintManagementSystem.dto.request.CreateProductDto;
+//import com.projects.complaintManagementSystem.entity.ProductNutrition;
+//import com.projects.complaintManagementSystem.entity.ProductVariant;
+//import com.projects.complaintManagementSystem.service.UserService;
 //import org.junit.jupiter.api.Test;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.test.context.SpringBootTest;

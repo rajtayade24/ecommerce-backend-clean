@@ -1,7 +1,7 @@
-package com.example.complaintManagementSystem.security;
+package com.projects.complaintManagementSystem.security;
 
-import com.example.complaintManagementSystem.entity.User;
-import com.example.complaintManagementSystem.enums.AuthProviderType;
+import com.projects.complaintManagementSystem.entity.User;
+import com.projects.complaintManagementSystem.enums.AuthProviderType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -30,32 +30,31 @@ public class AuthUtil {
     }
 
     public String generateToken(User user) {
-        String subject = (user.getEmail() != null && !user.getEmail().isBlank())
-                ? user.getEmail()
-                : user.getMobile();
+        String subject = String.valueOf(user.getId());
 
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expirationMs);
 
         return Jwts.builder()
                 .setSubject(subject)
+                .claim("roles", user.getRoles().stream()
+                        .map(Enum::name)
+                        .toList())
                 .setIssuedAt(now)
                 .setExpiration(expiry)
                 .signWith(getSecretKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-
-    public String getUsernameFromToken(String token) {
+    public Claims getUserIdFromToken(String token) {
         try {
-            Claims claims = Jwts.parserBuilder()
+            return Jwts.parserBuilder()
                     .setSigningKey(getSecretKey())
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-            return claims.getSubject();
+
         } catch (Exception ex) {
-            // Optional: log or rethrow a  exception
             throw new RuntimeException("Invalid/expired JWT token", ex);
         }
     }
@@ -69,26 +68,52 @@ public class AuthUtil {
         };
     }
 
-    // public String determineProviderIdFromOAuth2User(OAuth2User oAuth2User, String registrationId) {
-    //     String providerId = switch (registrationId.toLowerCase()) {
-    //         case "google" -> oAuth2User.getAttribute("sub");
-    //         default -> throw new IllegalArgumentException("Unsupported OAuth2 provider: " + registrationId);
-    //     };
+    public Claims extractClaims(String token) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(getSecretKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (Exception ex) {
+            throw new RuntimeException("Invalid/expired JWT token", ex);
+        }
+    }
+//    public boolean isTokenValid(String token) {
+//        try {
+//            Jwts.parserBuilder()
+//                    .setSigningKey(getSecretKey())
+//                    .build()
+//                    .parseClaimsJws(token);
+//            return true;
+//        } catch (Exception ex) {
+//            return false;
+//        }
+//    }
 
-    //     if (providerId == null || providerId.isBlank()) {
-    //         throw new IllegalArgumentException("Unable to detarmine provider for OAuth2 login");
-    //     }
-    //     return providerId;
+    // public String determineProviderIdFromOAuth2User(OAuth2User oAuth2User, String
+    // registrationId) {
+    // String providerId = switch (registrationId.toLowerCase()) {
+    // case "google" -> oAuth2User.getAttribute("sub");
+    // default -> throw new IllegalArgumentException("Unsupported OAuth2 provider: "
+    // + registrationId);
+    // };
+
+    // if (providerId == null || providerId.isBlank()) {
+    // throw new IllegalArgumentException("Unable to detarmine provider for OAuth2
+    // login");
+    // }
+    // return providerId;
     // }
 
+    // public String determineUsernameFromOAuth2User(OAuth2User oAuth2User, String
+    // registrationId, String providerId) {
+    // String email = oAuth2User.getAttribute("email");
+    // if (email != null && !email.isBlank()) return email;
 
-    // public String determineUsernameFromOAuth2User(OAuth2User oAuth2User, String registrationId, String providerId) {
-    //     String email = oAuth2User.getAttribute("email");
-    //     if (email != null && !email.isBlank()) return email;
-
-    //     return switch (registrationId.toLowerCase()) {
-    //         case "google" -> oAuth2User.getAttribute("sub");
-    //         default -> providerId;
-    //     };
+    // return switch (registrationId.toLowerCase()) {
+    // case "google" -> oAuth2User.getAttribute("sub");
+    // default -> providerId;
+    // };
     // }
 }

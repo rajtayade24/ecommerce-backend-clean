@@ -1,4 +1,4 @@
-package com.example.complaintManagementSystem.entity;
+package com.projects.complaintManagementSystem.entity;
 
 import java.time.Instant;
 

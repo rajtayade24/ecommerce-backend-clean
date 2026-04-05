@@ -1,4 +1,4 @@
-package com.example.complaintManagementSystem.dto;
+package com.projects.complaintManagementSystem.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 public class AddressDto {
     private Long id;
     private Long userId;
-    private String name;
     private String line1;
     private String line2;
 
@@ -21,9 +20,6 @@ public class AddressDto {
     private String pincode;
 
     private String country = "INDIA";
-    private String phone;
-    private String label; // home/work
 
-    private boolean primaryAddress = true;
 }
 

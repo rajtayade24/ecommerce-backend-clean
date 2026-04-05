@@ -1,11 +1,11 @@
-//package com.projects.ecommerce;
+//package com.projects.complaintManagementSystem;
 //
-////import com.projects.ecommerce.repo.custom.ProductRepositoryCustom;
-////import com.projects.ecommerce.repo.custom.CategoryRepositoryCustom;
-//import com.projects.ecommerce.entity.User;
-//import com.projects.ecommerce.repository.custom.CategoryRepositoryCustom;
-//import com.projects.ecommerce.repository.custom.ProductRepositoryCustom;
-//import com.projects.ecommerce.service.UserService;
+////import com.projects.complaintManagementSystem.repo.custom.ProductRepositoryCustom;
+////import com.projects.complaintManagementSystem.repo.custom.CategoryRepositoryCustom;
+//import com.projects.complaintManagementSystem.entity.User;
+//import com.projects.complaintManagementSystem.repository.custom.CategoryRepositoryCustom;
+//import com.projects.complaintManagementSystem.repository.custom.ProductRepositoryCustom;
+//import com.projects.complaintManagementSystem.service.UserService;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
 //import org.junit.jupiter.api.extension.ExtendWith;

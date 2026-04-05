@@ -1,17 +1,19 @@
-package  com.example.complaintManagementSystem.service.impl;
+package com.projects.complaintManagementSystem.service.impl;
 
-import  com.example.complaintManagementSystem.config.AppConfig;
-import  com.example.complaintManagementSystem.dto.AddressDto;
-import  com.example.complaintManagementSystem.dto.UserDto;
-import  com.example.complaintManagementSystem.dto.request.LoginRequest;
-import  com.example.complaintManagementSystem.entity.Address;
-import  com.example.complaintManagementSystem.entity.User;
-import  com.example.complaintManagementSystem.enums.RoleType;
-import  com.example.complaintManagementSystem.repository.AddressRepository;
-import  com.example.complaintManagementSystem.repository.UserRepository;
-import  com.example.complaintManagementSystem.security.AuthUtil;
-import  com.example.complaintManagementSystem.service.UserService;
-import jakarta.validation.Valid;
+import com.projects.complaintManagementSystem.config.AppConfig;
+import com.projects.complaintManagementSystem.dto.AddressDto;
+import com.projects.complaintManagementSystem.dto.UserDto;
+import com.projects.complaintManagementSystem.dto.request.CreateUserDto;
+import com.projects.complaintManagementSystem.dto.request.LoginRequest;
+import com.projects.complaintManagementSystem.entity.Address;
+import com.projects.complaintManagementSystem.entity.User;
+import com.projects.complaintManagementSystem.enums.AccountStatusType;
+import com.projects.complaintManagementSystem.enums.RoleType;
+import com.projects.complaintManagementSystem.repository.AddressRepository;
+import com.projects.complaintManagementSystem.repository.UserRepository;
+import com.projects.complaintManagementSystem.security.AuthUtil;
+import com.projects.complaintManagementSystem.service.UserService;
+import com.projects.complaintManagementSystem.specification.UserSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -24,7 +26,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -42,39 +43,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto createUser(UserDto userDto) {
-//        User user = userRepository.findByMobile(userDto.getMobile())
-//                .orElse(null);
-
-//        if (user != null)
-//            throw new IllegalArgumentException("user already found");
-
-        User user = modelMapper.map(userDto, User.class);
-
-        // String identifier = userDto.getEmail();
-        // if (identifier.contains("@")) {
-        // user.setEmail(identifier);
-        // } else {
-        // user.setMobile(identifier);
-        // }
-
-        if (userDto.getMobile().startsWith("+91")) {
-            user.setMobile(userDto.getMobile());
-        } else {
-            user.setMobile("+91" + userDto.getMobile());
+    public UserDto createUser(CreateUserDto createUserDto) {
+        if (userRepository.existsByEmail(createUserDto.getEmail())) {
+            throw new RuntimeException("Email already exists");
         }
+        if (userRepository.existsByMobile(createUserDto.getMobile())) {
+            throw new RuntimeException("Mobile number already exists");
+        }
+
+        User user = modelMapper.map(createUserDto, User.class);
+        user.setRoles(Set.of(RoleType.CITIZEN
+        )); // default role
+        user.setAccountStatusType(AccountStatusType.PENDING);
+
+        user.setMobile(normalizeMobile(createUserDto.getMobile()));
 
         // Encrypt password
-        user.setPassword(appConfig.passwordEncoder().encode(userDto.getPassword()));
-
-        if (userDto.getRoles() != null && !userDto.getRoles().isEmpty()) {
-            user.setRoles(userDto.getRoles());
-        } else {
-            user.setRoles(Set.of(RoleType.USER)); // default role
-        }
+        user.setPassword(appConfig.passwordEncoder().encode(createUserDto.getPassword()));
 
         List<Address> addresses = new ArrayList<>();
-        for (AddressDto aDto : userDto.getAddresses()) {
+        for (AddressDto aDto : createUserDto.getAddresses()) {
             Address addr = modelMapper.map(aDto, Address.class);
             addr.setUser(user);
             addresses.add(addr);
@@ -96,17 +84,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto login(LoginRequest dto) {
+
         String identifier;
-        if (dto.getIdentifier().startsWith("+91") || dto.getIdentifier().contains("@")) {
+        if (dto.getIdentifier().contains("@")) {
             identifier = dto.getIdentifier();
         } else {
-            identifier = "+91" + dto.getIdentifier();
+            identifier = normalizeMobile(dto.getIdentifier());
         }
+
 
         User user = userRepository
                 .findByEmailOrMobile(identifier, identifier)
                 .orElseThrow(
                         () -> new UsernameNotFoundException("User not found with identifier: " + identifier));
+        
+//        if (user.getAccountStatusType() != AccountStatusType.ACTIVE) {
+//            throw new RuntimeException("Account not verified. Please verify mobile/email.");
+//        }
 
         try {
             Authentication authentication = authenticationManager.authenticate(
@@ -159,10 +153,6 @@ public class UserServiceImpl implements UserService {
             Address address = modelMapper.map(request, Address.class);
             address.setUser(user);
 
-            if (request.getPhone() == null || request.getPhone().isBlank()) {
-                address.setPhone(user.getMobile());
-            }
-
             Address saved = addressRepository.save(address);
             return modelMapper.map(saved, AddressDto.class);
         } catch (Exception e) {
@@ -170,45 +160,51 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-//    @Override
-//    @Transactional
-//    public ResponseEntity<UserDto> handleOAuth2LoginRequest(OAuth2User oAuth2User, String registrationId) {
-//        // fetch providerType and providerId
-//        // saved the providerType and providerId into the user
-//        // if the user has an account -> LOGIN
-//        // otherwise, first signup and then login
-//        AuthProviderType providerType = authUtil.getProviderTypeFromRegistrationId(registrationId);
-//        String providerId = authUtil.determineProviderIdFromOAuth2User(oAuth2User, registrationId);
-//
-//        User user = userRepository.findByProviderIdAndProviderType(providerId, providerType).orElse(null);
-//
-//        String email = oAuth2User.getAttribute("email");
-//
-//        User emailUser = (User) userRepository.findByEmail(email).orElse(null);
-//
-//        if (user == null && emailUser == null) {
-//            // signUp flow:
-//            String username = authUtil.determineUsernameFromOAuth2User(oAuth2User, registrationId, providerId);
-//
-//            UserDto newUser = new UserDto();
-//            newUser.setEmail(username);
-//            UserDto dto = createUser(newUser);
-//        } else if (user != null) {
-//            if (email != null && !email.isBlank()) {
-//                user.setEmail(email);
-//                userRepository.save(user);
-//            }
-//        } else {
-//            throw new BadCredentialsException(
-//                    "This email is already registered with provider " + emailUser.getProviderType());
-//        }
-//
-//        UserDto userDto = modelMapper.map(user, UserDto.class);
-//        assert user != null;
-//        String token = authUtil.generateToken(user);
-//        userDto.setToken(token);
-//        return ResponseEntity.ok(userDto);
-//    }
+    // @Override
+    // @Transactional
+    // public ResponseEntity<UserDto> handleOAuth2LoginRequest(OAuth2User
+    // oAuth2User, String registrationId) {
+    // // fetch providerType and providerId
+    // // saved the providerType and providerId into the user
+    // // if the user has an account -> LOGIN
+    // // otherwise, first signup and then login
+    // AuthProviderType providerType =
+    // authUtil.getProviderTypeFromRegistrationId(registrationId);
+    // String providerId = authUtil.determineProviderIdFromOAuth2User(oAuth2User,
+    // registrationId);
+    //
+    // User user = userRepository.findByProviderIdAndProviderType(providerId,
+    // providerType).orElse(null);
+    //
+    // String email = oAuth2User.getAttribute("email");
+    //
+    // User emailUser = (User) userRepository.findByEmail(email).orElse(null);
+    //
+    // if (user == null && emailUser == null) {
+    // // signUp flow:
+    // String username = authUtil.determineUsernameFromOAuth2User(oAuth2User,
+    // registrationId, providerId);
+    //
+    // UserDto newUser = new UserDto();
+    // newUser.setEmail(username);
+    // UserDto dto = createUser(newUser);
+    // } else if (user != null) {
+    // if (email != null && !email.isBlank()) {
+    // user.setEmail(email);
+    // userRepository.save(user);
+    // }
+    // } else {
+    // throw new BadCredentialsException(
+    // "This email is already registered with provider " +
+    // emailUser.getProviderType());
+    // }
+    //
+    // UserDto userDto = modelMapper.map(user, UserDto.class);
+    // assert user != null;
+    // String token = authUtil.generateToken(user);
+    // userDto.setToken(token);
+    // return ResponseEntity.ok(userDto);
+    // }
 
     // @Override
     // public String upload(MultipartFile file) {
@@ -229,26 +225,26 @@ public class UserServiceImpl implements UserService {
     // }
     // }
 
-    //    @Override
-//    public void deleteFile(String filePath) {
-//        try {
-//            // Normalize path: remove leading slash
-//            if (filePath.startsWith("/")) {
-//                filePath = filePath.substring(1);
-//            }
-//
-//            Path path = Paths.get(filePath);
-//
-//            if (Files.exists(path)) {
-//                Files.delete(path);
-//            } else {
-//                throw new RuntimeException("File not found: " + filePath);
-//            }
-//
-//        } catch (IOException e) {
-//            throw new RuntimeException("Failed to delete file: " + filePath, e);
-//        }
-//    }
+    // @Override
+    // public void deleteFile(String filePath) {
+    // try {
+    // // Normalize path: remove leading slash
+    // if (filePath.startsWith("/")) {
+    // filePath = filePath.substring(1);
+    // }
+    //
+    // Path path = Paths.get(filePath);
+    //
+    // if (Files.exists(path)) {
+    // Files.delete(path);
+    // } else {
+    // throw new RuntimeException("File not found: " + filePath);
+    // }
+    //
+    // } catch (IOException e) {
+    // throw new RuntimeException("Failed to delete file: " + filePath, e);
+    // }
+    // }
 
     @Transactional(readOnly = true)
     @Override
@@ -295,49 +291,6 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(user, UserDto.class);
     }
 
-    @Override
-    @Transactional
-    public UserDto setUserActive(Long userId, boolean active) {
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        // Rule 1: Prevent deactivating the ONLY ADMIN
-        boolean isAdmin = user.getRoles() != null
-                && user.getRoles().contains(RoleType.ADMIN);
-
-        if (isAdmin && !active) {
-            long activeAdminCount = userRepository.countByRolesContainingAndActive(RoleType.ADMIN, true);
-
-            if (activeAdminCount <= 1) {
-                throw new IllegalStateException(
-                        "System must contain at least one active ADMIN");
-            }
-        }
-
-        user.setActive(active);
-
-        User saved = userRepository.save(user);
-        return modelMapper.map(saved, UserDto.class);
-    }
-
-    public List<String> suggestKeywords(String q, int limit) {
-        if (q == null || q.isBlank() || limit <= 0) {
-            return Collections.emptyList();
-        }
-
-        String query = q.trim().toLowerCase();
-        int fetchSize = Math.max(limit, 3);
-
-        LinkedHashSet<String> result = new LinkedHashSet<>(limit);
-
-        add(result, productRepository.suggestProductNames(query, fetchSize), limit);
-        add(result, productRepository.suggestProductDescriptionSnippets(query, fetchSize), limit);
-        add(result, categoryRepository.suggestCategoryNamesOrDescriptions(query, fetchSize), limit);
-
-        return new ArrayList<>(result);
-    }
-
     private void add(Set<String> target, List<String> source, int limit) {
         if (source == null)
             return;
@@ -352,9 +305,31 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    public String normalizeMobile(String mobile) {
+        if (mobile == null) return null;
 
-    public String uploadImage(@Valid MultipartFile image) {
-        CloudinaryUploadResult result = cloudService.upload(image);
-        return result.getImage();
+        mobile = mobile.trim().replaceAll("\\s+", "");
+
+        // remove leading +
+        if (mobile.startsWith("+")) {
+            mobile = mobile.substring(1);
+        }
+
+        // remove leading 0
+        if (mobile.startsWith("0")) {
+            mobile = mobile.substring(1);
+        }
+
+        // if already starts with 91
+        if (mobile.startsWith("91")) {
+            return "+" + mobile;
+        }
+
+        // otherwise assume Indian number
+        return "+91" + mobile;
     }
+//    public String uploadImage(@Valid MultipartFile image) {
+//        CloudinaryUploadResult result = cloudService.upload(image);
+//        return result.getImage();
+//    }
 }

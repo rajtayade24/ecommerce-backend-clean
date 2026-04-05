@@ -1,6 +1,6 @@
-package com.example.complaintManagementSystem.exceptions;
+package com.projects.complaintManagementSystem.exceptions;
 
-// import com.example.complaintManagementSystem.service.impl.FeedbackServiceImpl;
+// import com.projects.complaintManagementSystem.service.impl.FeedbackServiceImpl;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -11,6 +11,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.nio.file.AccessDeniedException;
@@ -27,35 +30,33 @@ public class GlobalExceptionHandler {
     }
 
     // AuthenticationException → 401 UNAUTHORIZED
-    // (Invalid password, bad credentials, JWT expired inside AuthenticationManager, etc.)
+    // (Invalid password, bad credentials, JWT expired inside AuthenticationManager,
+    // etc.)
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ApiError> handleAuthenticationException(AuthenticationException ex) {
         ApiError apiError = new ApiError(
                 "Authentication failed: " + ex.getMessage(),
-                HttpStatus.UNAUTHORIZED
-        );
+                HttpStatus.UNAUTHORIZED);
         return new ResponseEntity<>(apiError, apiError.getStatusCode());
     }
 
-    // JWT Token Error  → 401 UNAUTHORIZED
+    // JWT Token Error → 401 UNAUTHORIZED
     // (Invalid token, malformed token, expired token)
     @ExceptionHandler(JwtException.class)
     public ResponseEntity<ApiError> handleJwtException(JwtException ex) {
         ApiError apiError = new ApiError(
                 "Invalid or expired JWT token: " + ex.getMessage(),
-                HttpStatus.UNAUTHORIZED
-        );
+                HttpStatus.UNAUTHORIZED);
         return new ResponseEntity<>(apiError, apiError.getStatusCode());
     }
 
-    // Access Denied       → 403 FORBIDDEN
+    // Access Denied → 403 FORBIDDEN
     // (User logged in but doesn't have permission)
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiError> handleAccessDeniedException(AccessDeniedException ex) {
         ApiError apiError = new ApiError(
                 "Access Denied: You don't have permission to perform this action.",
-                HttpStatus.FORBIDDEN
-        );
+                HttpStatus.FORBIDDEN);
         return new ResponseEntity<>(apiError, apiError.getStatusCode());
     }
 
@@ -63,8 +64,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
         ApiError apiError = new ApiError(
                 "Invalid request body: " + ex.getMostSpecificCause().getMessage(),
-                HttpStatus.BAD_REQUEST
-        );
+                HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(apiError, apiError.getStatusCode());
     }
 
@@ -73,19 +73,16 @@ public class GlobalExceptionHandler {
 
         ApiError apiError = new ApiError(
                 ex.getMessage(),
-                HttpStatus.CONFLICT
-        );
+                HttpStatus.CONFLICT);
         return new ResponseEntity<>(apiError, apiError.getStatusCode());
     }
-
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ApiError> handleMaxSize(MaxUploadSizeExceededException ex) {
 
         ApiError apiError = new ApiError(
                 "File too large. Max allowed size is 10MB.",
-                HttpStatus.PAYLOAD_TOO_LARGE
-        );
+                HttpStatus.PAYLOAD_TOO_LARGE);
         return new ResponseEntity<>(apiError, apiError.getStatusCode());
     }
 
@@ -93,16 +90,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleIllegalArgument(IllegalArgumentException ex) {
         return new ResponseEntity<>(
                 new ApiError(ex.getMessage(), HttpStatus.NOT_FOUND),
-                HttpStatus.NOT_FOUND
-        );
+                HttpStatus.NOT_FOUND);
     }
 
+
     // @ExceptionHandler(FeedbackServiceImpl.ResourceNotFoundException.class)
-    // public ResponseEntity<ApiError> handleNotFound(FeedbackServiceImpl.ResourceNotFoundException ex) {
-    //     return new ResponseEntity<>(
-    //             new ApiError(ex.getMessage(), HttpStatus.NOT_FOUND),
-    //             HttpStatus.NOT_FOUND
-    //     );
+    // public ResponseEntity<ApiError>
+    // handleNotFound(FeedbackServiceImpl.ResourceNotFoundException ex) {
+    // return new ResponseEntity<>(
+    // new ApiError(ex.getMessage(), HttpStatus.NOT_FOUND),
+    // HttpStatus.NOT_FOUND
+    // );
     // }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -113,10 +111,9 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining("; "));
         return new ResponseEntity<>(
                 new ApiError(message, HttpStatus.BAD_REQUEST),
-                HttpStatus.BAD_REQUEST
-        );
+                HttpStatus.BAD_REQUEST);
     }
-    
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneralException(Exception ex) {
 
@@ -127,9 +124,41 @@ public class GlobalExceptionHandler {
         ApiError apiError = new ApiError(
                 ex.getMessage(),
                 cause,
-                HttpStatus.INTERNAL_SERVER_ERROR
-        );
+                HttpStatus.INTERNAL_SERVER_ERROR);
 
         return new ResponseEntity<>(apiError, apiError.getStatusCode());
     }
+
+    @ExceptionHandler(ResourceAccessException.class)
+    public ResponseEntity<ApiError> handleResourceAccess(ResourceAccessException ex) {
+
+        ApiError apiError = new ApiError(
+                "AI service is currently unavailable. Please try again later.",
+                ex.getMessage(),
+                HttpStatus.SERVICE_UNAVAILABLE);
+
+        return new ResponseEntity<>(apiError, apiError.getStatusCode());
+    }
+
+    @ExceptionHandler(HttpClientErrorException.class)
+    public ResponseEntity<ApiError> handleHttpClientError(HttpClientErrorException ex) {
+
+        ApiError apiError = new ApiError(
+                "Error from AI service (Client Error)",
+                ex.getResponseBodyAsString(),
+                (HttpStatus) ex.getStatusCode());
+
+        return new ResponseEntity<>(apiError, apiError.getStatusCode());
+    }
+    @ExceptionHandler(HttpServerErrorException.class)
+    public ResponseEntity<ApiError> handleHttpServerError(HttpServerErrorException ex) {
+
+        ApiError apiError = new ApiError(
+                "AI service failed internally",
+                ex.getResponseBodyAsString(),
+                HttpStatus.BAD_GATEWAY);
+
+        return new ResponseEntity<>(apiError, apiError.getStatusCode());
+    }
+
 }

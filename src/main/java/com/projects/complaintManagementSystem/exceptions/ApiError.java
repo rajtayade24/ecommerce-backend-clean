@@ -1,4 +1,4 @@
-package com.example.complaintManagementSystem.exceptions;
+package com.projects.complaintManagementSystem.exceptions;
 
 import lombok.Data;
 import org.springframework.http.HttpStatus;

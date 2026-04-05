@@ -1,4 +1,4 @@
-package com.example.complaintManagementSystem.enums;
+package com.projects.complaintManagementSystem.enums;
 
 public enum FeedbackStatus {
     NEW, REVIEWED, RESOLVED, REJECTED, APPROVED

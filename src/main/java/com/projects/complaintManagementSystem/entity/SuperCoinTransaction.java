@@ -1,4 +1,4 @@
-// package com.projects.ecommerce.entity;
+package com.projects.complaintManagementSystem.entity;// package com.projects.ecommerce.entity;
 
 // import com.projects.ecommerce.enums.SuperCoinReason;
 // import jakarta.persistence.*;

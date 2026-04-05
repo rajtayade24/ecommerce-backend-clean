@@ -1,6 +1,6 @@
-package com.projects.ecommerce.specification;
+package com.projects.complaintManagementSystem.specification;
 
-import com.projects.ecommerce.entity.User;
+import com.projects.complaintManagementSystem.entity.User;
 import org.springframework.data.jpa.domain.Specification;
 
 public final class UserSpecification {

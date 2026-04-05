@@ -1,6 +1,6 @@
-package com.example.complaintManagementSystem.dto;
+package com.projects.complaintManagementSystem.dto;
 
-import com.example.complaintManagementSystem.enums.RoleType;
+import com.projects.complaintManagementSystem.enums.RoleType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,13 +17,13 @@ import java.util.Set;
 public class UserDto {
     private String email;
 
-    private String password;
-
     private Long id;
 
     private String mobile;
 
-    private String name;
+    private String firstName;
+    private String middleName;
+    private String lastName;
 
     private List<AddressDto> addresses = new ArrayList<>();
 

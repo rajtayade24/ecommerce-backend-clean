@@ -1,8 +1,8 @@
-package  com.example.complaintManagementSystem.util;
+package com.projects.complaintManagementSystem.util;
 
-import  com.example.complaintManagementSystem.dto.AddressDto;
-import  com.example.complaintManagementSystem.entity.*;
-import  com.example.complaintManagementSystem.enums.PaymentMethodType;
+import com.projects.complaintManagementSystem.dto.AddressDto;
+import com.projects.complaintManagementSystem.entity.*;
+import com.projects.complaintManagementSystem.enums.PaymentMethodType;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -30,9 +30,6 @@ public class MapperUtil {
         return Address.builder()
                 .line1(dto.getLine1())
                 .line2(dto.getLine2())
-                .primaryAddress(dto.isPrimaryAddress())
-                .name(dto.getName())
-                .phone(dto.getPhone())
                 .city(dto.getCity())
                 .state(dto.getState())
                 .pincode(dto.getPincode())
@@ -42,11 +39,8 @@ public class MapperUtil {
 
     public AddressDto copyAddressFromEntity(Address src) {
         return AddressDto.builder()
-                .name(src.getName())
                 .line1(src.getLine1())
                 .line2(src.getLine2())
-                .primaryAddress(src.isPrimaryAddress())
-                .phone(src.getPhone())
                 .city(src.getCity())
                 .state(src.getState())
                 .pincode(src.getPincode())
@@ -65,4 +59,27 @@ public class MapperUtil {
         return "ORD-" + ts + "-" + rnd;
     }
 
+    public String normalizeMobile(String mobile) {
+        if (mobile == null) return null;
+
+        mobile = mobile.trim().replaceAll("\\s+", "");
+
+        // remove leading +
+        if (mobile.startsWith("+")) {
+            mobile = mobile.substring(1);
+        }
+
+        // remove leading 0
+        if (mobile.startsWith("0")) {
+            mobile = mobile.substring(1);
+        }
+
+        // if already starts with 91
+        if (mobile.startsWith("91")) {
+            return "+" + mobile;
+        }
+
+        // otherwise assume Indian number
+        return "+91" + mobile;
+    }
 }

@@ -1,8 +1,8 @@
-//package com.projects.ecommerce;
+//package com.projects.complaintManagementSystem;
 //
-//import com.projects.ecommerce.entity.User;
-//import com.projects.ecommerce.repository.UserRepository;
-//import com.projects.ecommerce.service.UserService;
+//import com.projects.complaintManagementSystem.entity.User;
+//import com.projects.complaintManagementSystem.repository.UserRepository;
+//import com.projects.complaintManagementSystem.service.UserService;
 //import org.junit.jupiter.api.Test;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.test.context.SpringBootTest;

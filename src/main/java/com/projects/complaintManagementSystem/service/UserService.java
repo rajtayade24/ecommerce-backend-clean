@@ -1,9 +1,10 @@
-package com.example.complaintManagementSystem.service;
+package com.projects.complaintManagementSystem.service;
 
-import com.example.complaintManagementSystem.dto.AddressDto;
-import com.example.complaintManagementSystem.dto.UserDto;
-import com.example.complaintManagementSystem.dto.request.LoginRequest;
-import com.example.complaintManagementSystem.entity.User;
+import com.projects.complaintManagementSystem.dto.AddressDto;
+import com.projects.complaintManagementSystem.dto.UserDto;
+import com.projects.complaintManagementSystem.dto.request.CreateUserDto;
+import com.projects.complaintManagementSystem.dto.request.LoginRequest;
+import com.projects.complaintManagementSystem.entity.User;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +16,7 @@ import java.util.List;
 
 public interface UserService {
 
-    UserDto createUser(UserDto userDto);
+    UserDto createUser(CreateUserDto userDto);
 
     UserDto login(LoginRequest dto);
 
@@ -33,12 +34,10 @@ public interface UserService {
 
     UserDto getUserById(Long id);
 
-    UserDto setUserActive(Long userId, boolean active);
-
-    List<String> suggestKeywords(String q, int limit);
+//    List<String> suggestKeywords(String q, int limit);
 
     // ResponseEntity<UserDto> handleOAuth2LoginRequest(OAuth2User oAuth2User,
     // String registrationId);
 
-    String uploadImage(@Valid MultipartFile image);
+//    String uploadImage(@Valid MultipartFile image);
 }

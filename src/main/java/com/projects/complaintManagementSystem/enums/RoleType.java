@@ -1,5 +1,7 @@
-package com.example.complaintManagementSystem.enums;
+package com.projects.complaintManagementSystem.enums;
 
 public enum RoleType {
-    USER, ADMIN
+    CITIZEN,
+    OFFICER,
+    ADMIN
 }

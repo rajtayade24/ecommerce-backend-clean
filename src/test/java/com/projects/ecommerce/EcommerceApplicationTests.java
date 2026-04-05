@@ -1,8 +1,8 @@
-//package com.projects.ecommerce;
+//package com.projects.complaintManagementSystem;
 //
-//import com.projects.ecommerce.entity.User;
-//import com.projects.ecommerce.enums.RoleType;
-//import com.projects.ecommerce.repository.UserRepository;
+//import com.projects.complaintManagementSystem.entity.User;
+//import com.projects.complaintManagementSystem.enums.RoleType;
+//import com.projects.complaintManagementSystem.repository.UserRepository;
 //import org.junit.jupiter.api.Test;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.test.context.SpringBootTest;
@@ -13,7 +13,7 @@
 //import java.util.Set;
 //
 //@SpringBootTest
-//class EcommerceApplicationTests {
+//class complaintManagementSystemApplicationTests {
 //
 //    @Autowired
 //    private UserRepository userRepository;

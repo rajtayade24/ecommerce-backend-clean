@@ -1,4 +1,4 @@
-package com.example.complaintManagementSystem.entity;
+package com.projects.complaintManagementSystem.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -17,9 +17,6 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
-
     @Column(nullable = false, length = 100)
     private String line1;
 
@@ -34,14 +31,7 @@ public class Address {
     @Column(nullable = false)
     private String pincode;
 
-    private boolean primaryAddress;
-
     private String country = "INDIA";
-
-    @Column(nullable = false)
-    private String phone;
-
-    private String label; // home/work
 
     @ManyToOne
     @JsonBackReference

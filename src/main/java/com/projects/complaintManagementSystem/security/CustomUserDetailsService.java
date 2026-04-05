@@ -1,6 +1,6 @@
-package com.example.complaintManagementSystem.security;
+package com.projects.complaintManagementSystem.security;
 
-import com.example.complaintManagementSystem.repository.UserRepository;
+import com.projects.complaintManagementSystem.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

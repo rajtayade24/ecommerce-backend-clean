@@ -1,7 +1,7 @@
-package com.example.complaintManagementSystem.security;
+package com.projects.complaintManagementSystem.security;
 
-import com.example.complaintManagementSystem.config.AppConfig;
-import com.example.complaintManagementSystem.enums.RoleType;
+import com.projects.complaintManagementSystem.config.AppConfig;
+import com.projects.complaintManagementSystem.enums.RoleType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -28,17 +29,17 @@ import java.util.List;
 @Slf4j
 public class SecurityConfig {
 
-    private final JwtAuthFilter jwtAuthFilter;
+//    private final JwtAuthFilter jwtAuthFilter;
     private final CustomUserDetailsService userDetailsService;
     private final AppConfig appConfig;
-//    private final OAuth2SuccesssHandler oAuth2SuccesssHandler;
+    // private final OAuth2SuccesssHandler oAuth2SuccesssHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-//                .csrf(csrf -> csrf.disable())
-//                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
-//        return httpSecurity.build();
+                // .csrf(csrf -> csrf.disable())
+                // .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+                // return httpSecurity.build();
 
                 // Disable CSRF for APIs
                 .csrf(csrf -> csrf.disable())
@@ -51,65 +52,68 @@ public class SecurityConfig {
 
                 // Authorization rules
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers(
-                                        "/",
-                                        "/index.html",
-                                        "/assets/**",
-                                        "/favicon.ico",
-                                        "/verify/**",
-                                        "/products/**",
-                                        "/categories/**",
-                                        "/cart/**",
-                                        "/about",
-                                        "/feedbacks",
-                                        "/term-service",
-                                        "/privacy-policy",
-                                        "/payment-success/**"
-                                ).permitAll()
-                                 .requestMatchers(
-                                        "/api/index.html",
-                                        "/api/assets/**",
-                                        "/api/favicon.ico",
-                                        "/api/verify/**",
-                                        "/api/products/**",
-                                        "/api/categories/**",
-                                        "/api/cart/**",
-                                        "/api/about",
-                                        "/api/feedbacks",
-                                        "/api/term-service",
-                                        "/api/privacy-policy",
-                                        "/api/payment-success/**"
-                                ).permitAll()
-                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight
-                                .requestMatchers("/api/health", "/api/actuator/health", "/api/auth/login", "/api/auth/signup", "/api/auth/me/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/categories/**", "/api/products/**").permitAll()
-                                .requestMatchers("/api/otp/send", "/api/otp/verify").permitAll()
-                                .requestMatchers("/api/public/**", "/api/uploads/**").permitAll()
-                                .requestMatchers("/api/search/suggestions/**").permitAll()
-                                .requestMatchers("/api/payment-success/**", "/api/payment-cancel").permitAll()
-                                .requestMatchers("/api/admin/**").hasRole(RoleType.ADMIN.name()) // only admin can POST
-//
-                                .requestMatchers("/api/**").authenticated()
-                                .anyRequest().permitAll()
-                )
+//                        .requestMatchers(
+//                                "/",
+//                                "/index.html",
+//                                "/assets/**",
+//                                "/favicon.ico",
+//                                "/verify/**",
+//                                "/products/**",
+//                                "/categories/**",
+//                                "/cart/**",
+//                                "/about",
+//                                "/feedbacks",
+//                                "/term-service",
+//                                "/privacy-policy",
+//                                "/payment-success/**")
+//                        .permitAll()
+//                        .requestMatchers(
+//                                "/api/index.html",
+//                                "/api/assets/**",
+//                                "/api/favicon.ico",
+//                                "/api/verify/**",
+//                                "/api/products/**",
+//                                "/api/categories/**",
+//                                "/api/cart/**",
+//                                "/api/about",
+//                                "/api/feedbacks",
+//                                "/api/term-service",
+//                                "/api/privacy-policy",
+//                                "/api/payment-success/**")
+//                        .permitAll()
+//                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight
+//                        .requestMatchers("/api/health", "/api/actuator/health", "/api/auth/login", "/api/auth/signup",
+//                                "/api/auth/me/**")
+//                        .permitAll()
+//                        .requestMatchers(HttpMethod.GET, "/api/categories/**", "/api/products/**").permitAll()
+//                        .requestMatchers("/api/otp/send", "/api/otp/verify").permitAll()
+//                        .requestMatchers("/api/public/**", "/api/uploads/**").permitAll()
+//                        .requestMatchers("/api/search/suggestions/**").permitAll()
+//                        .requestMatchers("/api/payment-success/**", "/api/payment-cancel").permitAll()
+//                        .requestMatchers("/api/admin/**").hasRole(RoleType.ADMIN.name()) // only admin can POST
+//                        //
+//                        .requestMatchers("/api/**").authenticated()
+                        .anyRequest().permitAll()
+//                )
                 // Authentication provider
-                .authenticationProvider(authenticationProvider())
+//                .authenticationProvider(authenticationProvider())
 
                 // JWT filter before username/password auth filter
-                .addFilterBefore(
-                        jwtAuthFilter,
-                        UsernamePasswordAuthenticationFilter.class
+//                .addFilterBefore(
+//                        jwtAuthFilter,
+//                        UsernamePasswordAuthenticationFilter.class
 
-//                )
-////                .oauth2Client(Customizer.withDefaults())
-////
-////                // OAuth2 login
-////                .oauth2Login(oauth2 ->
-////                        oauth2.
-////                                failureHandler((AuthenticationFailureHandler) (request, response, exception) -> {
-////                                    log.error("oauth2 error" + exception.getMessage());
-////                                })
-////                                .successHandler(oAuth2SuccesssHandler)
+                // )
+                //// .oauth2Client(Customizer.withDefaults())
+                ////
+                //// // OAuth2 login
+                //// .oauth2Login(oauth2 ->
+                //// oauth2.
+                //// failureHandler((AuthenticationFailureHandler) (request, response,
+                // exception) -> {
+                //// log.error("oauth2 error" + exception.getMessage());
+                //// })
+                //// .successHandler(oAuth2SuccesssHandler)
 
                 );
         return httpSecurity.build();
@@ -134,6 +138,9 @@ public class SecurityConfig {
         configuration.setAllowCredentials(true); // allow cookies / auth headers
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5500",
+                "http://localhost:8080",
+                "http://localhost:5173",
+                "http://10.91.2.29:5173",
                 "http://127.0.0.1:5500"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
@@ -147,119 +154,133 @@ public class SecurityConfig {
 
 }
 
-
-//package com.projects.ecommerce.security;
+// package com.projects.ecommerce.security;
 //
-//import com.projects.ecommerce.config.AppConfig;
-//import com.projects.ecommerce.enums.RoleType;
-//import lombok.RequiredArgsConstructor;
-//import lombok.extern.slf4j.Slf4j;
-//import org.springframework.context.annotation.Bean;
-//import org.springframework.context.annotation.Configuration;
-//import org.springframework.http.HttpMethod;
-//import org.springframework.security.authentication.AuthenticationManager;
-//import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+// import com.projects.ecommerce.config.AppConfig;
+// import com.projects.ecommerce.enums.RoleType;
+// import lombok.RequiredArgsConstructor;
+// import lombok.extern.slf4j.Slf4j;
+// import org.springframework.context.annotation.Bean;
+// import org.springframework.context.annotation.Configuration;
+// import org.springframework.http.HttpMethod;
+// import org.springframework.security.authentication.AuthenticationManager;
+// import
+// org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 //
-//import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-//import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-//import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-//import org.springframework.security.config.http.SessionCreationPolicy;
-//import org.springframework.security.web.SecurityFilterChain;
-//import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-//import org.springframework.web.cors.CorsConfiguration;
-//import org.springframework.web.cors.CorsConfigurationSource;
-//import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+// import
+// org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+// import
+// org.springframework.security.config.annotation.web.builders.HttpSecurity;
+// import
+// org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+// import org.springframework.security.config.http.SessionCreationPolicy;
+// import org.springframework.security.web.SecurityFilterChain;
+// import
+// org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+// import org.springframework.web.cors.CorsConfiguration;
+// import org.springframework.web.cors.CorsConfigurationSource;
+// import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 //
-//import java.util.List;
+// import java.util.List;
 //
-//@Configuration
-//@EnableWebSecurity
-//@RequiredArgsConstructor
-//@Slf4j
-//public class SecurityConfig {
+// @Configuration
+// @EnableWebSecurity
+// @RequiredArgsConstructor
+// @Slf4j
+// public class SecurityConfig {
 //
-//    private final JwtAuthFilter jwtAuthFilter;
-//    private final CustomUserDetailsService userDetailsService;
-//    private final AppConfig appConfig;
-/// /    private final OAuth2SuccesssHandler oAuth2SuccesssHandler;
+// private final JwtAuthFilter jwtAuthFilter;
+// private final CustomUserDetailsService userDetailsService;
+// private final AppConfig appConfig;
+/// / private final OAuth2SuccesssHandler oAuth2SuccesssHandler;
 //
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-//        httpSecurity
-//                // Disable CSRF for APIs
-//                .csrf(csrf -> csrf.disable())
+// @Bean
+// public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)
+// throws Exception {
+// httpSecurity
+// // Disable CSRF for APIs
+// .csrf(csrf -> csrf.disable())
 //
-//                // Enable CORS with custom configuration
-//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+// // Enable CORS with custom configuration
+// .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 //
-//                // Stateless session (JWT)
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+// // Stateless session (JWT)
+// .sessionManagement(session ->
+// session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 //
-//                // Authorization rules
-//                .authorizeHttpRequests(auth -> auth
-//                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight
-//                                .requestMatchers("/", "/health", "/actuator/health", "/auth/login", "/auth/signup", "/auth/me/**").permitAll()
-//                                .requestMatchers(HttpMethod.GET, "/categories/**", "/products/**").permitAll()
-//                                .requestMatchers("/otp/send", "/otp/verify").permitAll()
-//                                .requestMatchers("/public/**", "/uploads/**").permitAll()
-//                                .requestMatchers("/search/suggestions/**").permitAll()
-//                                .requestMatchers("/payment-success/**", "/payment-cancel").permitAll()
-//                                .requestMatchers("/admin/**").hasRole(RoleType.ADMIN.name()) // only admin can POST
+// // Authorization rules
+// .authorizeHttpRequests(auth -> auth
+// .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight
+// .requestMatchers("/", "/health", "/actuator/health", "/auth/login",
+// "/auth/signup", "/auth/me/**").permitAll()
+// .requestMatchers(HttpMethod.GET, "/categories/**",
+// "/products/**").permitAll()
+// .requestMatchers("/otp/send", "/otp/verify").permitAll()
+// .requestMatchers("/public/**", "/uploads/**").permitAll()
+// .requestMatchers("/search/suggestions/**").permitAll()
+// .requestMatchers("/payment-success/**", "/payment-cancel").permitAll()
+// .requestMatchers("/admin/**").hasRole(RoleType.ADMIN.name()) // only admin
+// can POST
 /// /
-//                                .anyRequest().authenticated()
-//                )
-//                // Authentication provider
-//                .authenticationProvider(authenticationProvider())
+// .anyRequest().authenticated()
+// )
+// // Authentication provider
+// .authenticationProvider(authenticationProvider())
 //
-//                // JWT filter before username/password auth filter
-//                .addFilterBefore(
-//                        jwtAuthFilter,
-//                        UsernamePasswordAuthenticationFilter.class
+// // JWT filter before username/password auth filter
+// .addFilterBefore(
+// jwtAuthFilter,
+// UsernamePasswordAuthenticationFilter.class
 //
-/// /                )
-/// /                .oauth2Client(Customizer.withDefaults())
+/// / )
+/// / .oauth2Client(Customizer.withDefaults())
 /// /
-/// /                // OAuth2 login
-/// /                .oauth2Login(oauth2 ->
-/// /                        oauth2.
-/// /                                failureHandler((AuthenticationFailureHandler) (request, response, exception) -> {
-/// /                                    log.error("oauth2 error" + exception.getMessage());
-/// /                                })
-/// /                                .successHandler(oAuth2SuccesssHandler)
-//                );
+/// / // OAuth2 login
+/// / .oauth2Login(oauth2 ->
+/// / oauth2.
+/// / failureHandler((AuthenticationFailureHandler) (request, response,
+// exception) -> {
+/// / log.error("oauth2 error" + exception.getMessage());
+/// / })
+/// / .successHandler(oAuth2SuccesssHandler)
+// );
 //
-//        return httpSecurity.build();
-//    }
+// return httpSecurity.build();
+// }
 //
-//    @Bean
-//    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-//        return config.getAuthenticationManager();
-//    }
+// @Bean
+// public AuthenticationManager
+// authenticationManager(AuthenticationConfiguration config) throws Exception {
+// return config.getAuthenticationManager();
+// }
 //
-//    @Bean
-//    public DaoAuthenticationProvider authenticationProvider() {
-//        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService); // inject in constructor
-//        provider.setPasswordEncoder(appConfig.passwordEncoder());
-//        return provider;
-//    }
+// @Bean
+// public DaoAuthenticationProvider authenticationProvider() {
+// DaoAuthenticationProvider provider = new
+// DaoAuthenticationProvider(userDetailsService); // inject in constructor
+// provider.setPasswordEncoder(appConfig.passwordEncoder());
+// return provider;
+// }
 //
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration configuration = new CorsConfiguration();
+// @Bean
+// public CorsConfigurationSource corsConfigurationSource() {
+// CorsConfiguration configuration = new CorsConfiguration();
 //
-//        configuration.setAllowCredentials(true); // allow cookies / auth headers
-//        configuration.setAllowedOrigins(List.of(
-//                "http://localhost:5500",
-//                "http://127.0.0.1:5500",
-//                "https://ecommerce-frontend-110.onrender.com" // deployed frontend
-//        ));
-//        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-//        configuration.setAllowedHeaders(List.of("*"));
+// configuration.setAllowCredentials(true); // allow cookies / auth headers
+// configuration.setAllowedOrigins(List.of(
+// "http://localhost:5500",
+// "http://127.0.0.1:5500",
+// "https://ecommerce-frontend-110.onrender.com" // deployed frontend
+// ));
+// configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH",
+// "DELETE", "OPTIONS"));
+// configuration.setAllowedHeaders(List.of("*"));
 //
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
+// UrlBasedCorsConfigurationSource source = new
+// UrlBasedCorsConfigurationSource();
+// source.registerCorsConfiguration("/**", configuration);
 //
-//        return source;
-//    }
+// return source;
+// }
 //
-//}
+// }

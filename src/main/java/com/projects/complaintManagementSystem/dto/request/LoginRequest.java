@@ -1,4 +1,4 @@
-package com.example.complaintManagementSystem.dto.request;
+package com.projects.complaintManagementSystem.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

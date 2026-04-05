@@ -1,11 +1,9 @@
-package com.projects.complaintManagementSystem.controller;
+package com.projects.complaintManagementSystem.controller.publicapi;
 
 import com.projects.complaintManagementSystem.dto.ApiMessageResponse;
 import com.projects.complaintManagementSystem.dto.ComplaintAnalysisResponse;
-import com.projects.complaintManagementSystem.dto.ComplaintRequest;
 import com.projects.complaintManagementSystem.dto.ComplaintStatusResponse;
 import com.projects.complaintManagementSystem.service.PythonAiService;
-import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
